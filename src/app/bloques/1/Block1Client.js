@@ -167,9 +167,9 @@ export default function Block1Client({ user }) {
                                             </p>
                                         </div>
                                         <div style={{ position: 'relative' }}>
-                                            <img src="https://images.unsplash.com/photo-1541888001666-ebbdfbb0f6eb?auto=format&fit=crop&q=80&w=800" alt="Boceto Arquitectónico" style={{ width: '100%', borderRadius: '12px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }} />
+                                            <img src="https://i.pinimg.com/originals/57/52/d6/5752d6e78fed1307799b022226e6b0ec.jpg" alt="Boceto Arquitectónico" style={{ width: '100%', borderRadius: '12px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }} />
                                             <div style={{ position: 'absolute', bottom: '-20px', left: '-20px', background: 'var(--ua-teal)', padding: '20px', borderRadius: '8px', width: '80%', color: '#fff', boxShadow: '0 10px 20px rgba(0,0,0,0.3)' }}>
-                                                <i style={{ fontSize: '0.9rem' }}>"La arquitectura es el juego sabio, correcto y magnífico de los volúmenes ensamblados bajo la luz."</i>
+                                                <i style={{ fontSize: '0.9rem' }}>&quot;La arquitectura es el juego sabio, correcto y magnífico de los volúmenes ensamblados bajo la luz.&quot;</i>
                                                 <div style={{ fontWeight: 'bold', marginTop: '10px', fontSize: '0.8rem', textTransform: 'uppercase' }}>- Le Corbusier</div>
                                             </div>
                                         </div>
@@ -184,7 +184,7 @@ export default function Block1Client({ user }) {
                                             <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Francis D.K. Ching. Referencia fundamental para entender la geometría espacial.</p>
                                         </div>
                                         <div className="glass-panel" style={{ padding: '20px' }}>
-                                            <img src="https://images.unsplash.com/photo-1498448148332-6893ba4268e3?auto=format&fit=crop&w=400&q=80" style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '8px', marginBottom: '15px' }} />
+                                            <img src="https://www.domusweb.it/content/dam/domusweb/en/news/2018/05/16/the-maxxi-pays-tribute-to-bruno-zevis-intellectual-legacy/gallery/domus-maxxi-bruno-zevi-16.jpg.foto.rmedium.png" style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '8px', marginBottom: '15px' }} />
                                             <h5 style={{ color: 'var(--ua-lime)', marginBottom: '5px' }}>Saber Ver la Arquitectura</h5>
                                             <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Bruno Zevi. Ensayo clásico sobre la interpretación del espacio arquitectónico.</p>
                                         </div>

@@ -31,7 +31,7 @@ const ARCHITECTS = [
         id: 'meier',
         name: 'Richard Meier',
         title: 'Pureza Geométrica',
-        img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=600&fit=crop',
+        img: 'https://media.architecturaldigest.com/photos/571945dcd207ea4e41a32a7d/master/pass/richard-meier-architecture-01.jpg',
         desc: 'Eres muy estructurado y metódico. Disfrutas de la claridad espacial, la luz blanca como material de construcción y el rigor geométrico absoluto.',
         traits: ['Ortogonal', 'Blancura', 'Luz Estructurada']
     },
@@ -39,7 +39,7 @@ const ARCHITECTS = [
         id: 'hadid',
         name: 'Zaha Hadid',
         title: 'Fluidez Dinámica',
-        img: 'https://images.unsplash.com/photo-1511818966892-d7d671e672a2?w=400&h=600&fit=crop',
+        img: 'https://media.newyorker.com/photos/59096878019dfc3494ea0fed/master/pass/110725_r21083_g2048.jpg',
         desc: 'Desafías lo establecido. Tienes una afinidad por las formas paramétricas, la continuidad espacial ininterrumpida y el movimiento perpetuo.',
         traits: ['Antigravedad', 'Paramétrico', 'Continuidad']
     },
@@ -47,7 +47,7 @@ const ARCHITECTS = [
         id: 'gehry',
         name: 'Frank Gehry',
         title: 'Expresión Escultórica',
-        img: 'https://images.unsplash.com/photo-1515263487990-61b07816b324?w=400&h=600&fit=crop',
+        img: 'https://www.dreamideamachine.com/web/wp-content/uploads/2020/02/25146958.jpg',
         desc: 'Tu proceso es libre y emocional. Concibes la arquitectura como una escultura a gran escala, y confías plenamente en el dibujo a mano y la intuición matérica.',
         traits: ['Caos Controlado', 'Escultórico', 'Metal']
     },
@@ -55,7 +55,7 @@ const ARCHITECTS = [
         id: 'piano',
         name: 'Renzo Piano',
         title: 'Transparencia Tectónica',
-        img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=600&fit=crop',
+        img: 'https://www.telegraph.co.uk/content/dam/Travel/2018/September/pompidou-centre-paris-night.jpg',
         desc: 'Te obsesiona cómo están ensambladas las cosas. Tienes alma de ingeniero-arquitecto; amas mostrar la estructura, celebrar la luz y la permeabilidad.',
         traits: ['Hi-Tech', 'Ensamblaje', 'Ligereza Visual']
     },
@@ -63,7 +63,7 @@ const ARCHITECTS = [
         id: 'libeskind',
         name: 'Daniel Libeskind',
         title: 'Tensión Fragmentada',
-        img: 'https://images.unsplash.com/photo-1545893835-abaa50cbe628?w=400&h=600&fit=crop',
+        img: 'https://media.architecturaldigest.com/photos/5706ec8d3c6ec36d75349d57/master/w_1024%2Cc_limit/daniel-libeskind-architecture-05.jpg',
         desc: 'Buscas la narrativa y el drama espacial. Creas trayectos emocionales a través de líneas diagonales, cortes agudos y la tensión entre los vacíos.',
         traits: ['Narrativa', 'Diagonal', 'Deconstructivismo']
     },
@@ -71,7 +71,7 @@ const ARCHITECTS = [
         id: 'sejima',
         name: 'Kazuyo Sejima',
         title: 'Ligereza Etérea',
-        img: 'https://images.unsplash.com/photo-1431576901776-e539bd916ba2?w=400&h=600&fit=crop',
+        img: 'https://www.metalocus.es/sites/default/files/styles/mopis_news_carousel_item_desktop/public/metalocus_kazuyo-sejima_osaka-university-of-arts_30.jpg?itok=gEdf32Xt',
         desc: 'Tu estética es zen y minimalista al extremo. Desmaterializas los límites construyendo con reflejos, difuminados y blancos inmaculados.',
         traits: ['Inmaterial', 'Límites Difusos', 'Silencio Visual']
     }
