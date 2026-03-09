@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 2: El Desafío de la Luz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #0a0a0a;
+            font-family: 'Outfit', sans-serif;
+            color: #fff;
+        }
+
+        #app {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        #sidebar {
+            width: 340px;
+            background: rgba(0, 0, 0, 0.5);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        #canvas-area {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, #08090c 0%, #0f1318 100%);
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .ex-title {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #BA55D3;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .ex-subtitle {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .step-card {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-card.locked {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .step-card.active {
+            border-color: #BA55D3;
+            background: rgba(186, 85, 211, 0.08);
+            box-shadow: 0 0 20px rgba(186, 85, 211, 0.1);
+        }
+
+        .step-card.done {
+            border-color: rgba(80, 200, 120, 0.3);
+            background: rgba(80, 200, 120, 0.05);
+        }
+
+        .step-card.done::after {
+            content: '✓';
+            position: absolute;
+            top: 12px;
+            right: 15px;
+            color: #50c878;
+            font-weight: 900;
+            font-size: 1.2rem;
+        }
+
+        .step-num {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #BA55D3;
+            margin-bottom: 5px;
+        }
+
+        .step-card.locked .step-num {
+            color: #555;
+        }
+
+        .step-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .step-desc {
+            font-size: 0.8rem;
+            color: #888;
+            line-height: 1.4;
+        }
+
+        #controls {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 10px 18px;
+            border: 1px solid rgba(186, 85, 211, 0.3);
+            border-radius: 8px;
+            background: rgba(186, 85, 211, 0.05);
+            color: #BA55D3;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .btn-action:hover {
+            background: rgba(186, 85, 211, 0.15);
+        }
+
+        .btn-action.selected {
+            background: #BA55D3;
+            color: #fff;
+            border-color: #BA55D3;
+        }
+
+        .btn-finish {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #BA55D3;
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: filter 0.2s;
+            display: none;
+        }
+
+        .btn-finish:hover {
+            filter: brightness(1.1);
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #BA55D3;
+            cursor: pointer;
+            border: 2px solid #000;
+        }
+
+        .slider-value {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #BA55D3;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-box {
+            background: #111;
+            border-left: 5px solid #BA55D3;
+            border-radius: 14px;
+            max-width: 520px;
+            width: 90%;
+            padding: 35px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.show .modal-box {
+            transform: translateY(0);
+        }
+
+        .modal-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        .modal-title {
+            color: #BA55D3;
+            font-size: 1.4rem;
+            font-weight: 900;
+            margin-bottom: 12px;
+        }
+
+        .modal-body {
+            color: #ccc;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        .modal-btn {
+            background: #BA55D3;
+            color: #fff;
+            border: none;
+            padding: 12px 28px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            width: 100%;
+            transition: filter 0.2s;
+        }
+
+        .modal-btn:hover {
+            filter: brightness(1.15);
+        }
+
+        #info-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            color: #aaa;
+            text-align: center;
+        }
+
+        /* Light glow effect */
+        .light-meter {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .light-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .light-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s, background 0.5s;
+            background: linear-gradient(90deg, #BA55D3, #FFD700);
+        }
+
+        .light-label {
+            font-size: 0.75rem;
+            color: #888;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* ── Tutor Bubble ── */
+        #tutor-bubble {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            max-width: 340px;
+            padding: 16px 20px;
+            background: rgba(12, 12, 12, 0.95);
+            border-left: 4px solid #BA55D3;
+            border-radius: 14px;
+            backdrop-filter: blur(12px);
+            z-index: 50;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(186, 85, 211, 0.15);
+        }
+
+        #tutor-bubble.pulse {
+            animation: tutorPulse 0.5s ease;
+        }
+
+        @keyframes tutorPulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            }
+
+            50% {
+                transform: scale(1.03);
+                box-shadow: 0 8px 32px rgba(186, 85, 211, 0.2);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            }
+        }
+
+        .tutor-avatar {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .tutor-content {
+            flex: 1;
+        }
+
+        .tutor-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #BA55D3;
+            margin-bottom: 4px;
+        }
+
+        .tutor-text {
+            font-size: 0.88rem;
+            color: #ddd;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="sidebar">
+            <div class="ex-title">⛪ EL DESAFÍO DE LA LUZ</div>
+            <div class="ex-subtitle">Transforma un edificio románico de muros pesados y oscuros en una catedral gótica
+                alta y llena de luz.</div>
+
+            <div class="step-card active" data-step="1" onclick="activateStep(1)">
+                <div class="step-num">Paso 1</div>
+                <div class="step-title">Cambiar el Arco</div>
+                <div class="step-desc">Sustituye el arco de medio punto por un arco apuntado (ojival).</div>
+            </div>
+            <div class="step-card locked" data-step="2" onclick="activateStep(2)">
+                <div class="step-num">Paso 2</div>
+                <div class="step-title">Liberar el Muro</div>
+                <div class="step-desc">Crea contrafuertes y arbotantes para sacar los apoyos al exterior.</div>
+            </div>
+            <div class="step-card locked" data-step="3" onclick="activateStep(3)">
+                <div class="step-num">Paso 3</div>
+                <div class="step-title">Perforar el Límite</div>
+                <div class="step-desc">Inserta vitrales de colores en los espacios liberados del muro.</div>
+            </div>
+            <div class="step-card locked" data-step="4" onclick="activateStep(4)">
+                <div class="step-num">Paso 4</div>
+                <div class="step-title">Añadir Verticalidad</div>
+                <div class="step-desc">Estira las columnas hacia arriba para que se unan en la bóveda.</div>
+            </div>
+
+            <div id="controls"></div>
+
+            <div class="light-meter">
+                <div class="light-label">☀️ Nivel de Luz Interior</div>
+                <div class="light-bar">
+                    <div class="light-fill" id="lightFill" style="width:10%"></div>
+                </div>
+            </div>
+
+            <button class="btn-finish" id="btnFinish" onclick="finishExercise()">✓ Completar Ejercicio</button>
+        </div>
+
+        <div id="canvas-area">
+            <canvas id="canvas"></canvas>
+            <div id="info-overlay">Sección transversal · Transforma la estructura paso a paso</div>
+        </div>
+    </div>
+
+    <!-- Tutor Bubble -->
+    <div id="tutor-bubble">
+        <div class="tutor-avatar">👩‍🏫</div>
+        <div class="tutor-content">
+            <div class="tutor-label">Tutor</div>
+            <div class="tutor-text" id="tutorText">Bienvenido. Lee el concepto teórico y luego haz clic en <strong>"⌒
+                    Ojival"</strong> para cambiar el arco de medio punto por un arco apuntado.</div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal-box">
+            <div class="modal-icon" id="modalIcon"></div>
+            <div class="modal-title" id="modalTitle"></div>
+            <div class="modal-body" id="modalBody"></div>
+            <button class="modal-btn" onclick="closeModal()">Entendido</button>
+        </div>
+    </div>
+
+    <!-- Completion Modal -->
+    <div id="completion-modal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:500; align-items:center; justify-content:center;">
+        <div
+            style="background:#1a1a1a; border-left:5px solid #BA55D3; border-radius:16px; padding:40px; max-width:500px; width:90%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.8);">
+            <div style="font-size:3rem; margin-bottom:15px;">⛪</div>
+            <h2
+                style="color:#BA55D3; font-size:1.5rem; font-weight:900; margin-bottom:15px; font-family:'Outfit',sans-serif;">
+                ¡Simulación Completada!</h2>
+            <p
+                style="color:#ddd; font-size:1rem; line-height:1.7; margin-bottom:25px; font-family:'Outfit',sans-serif;">
+                Has transformado un edificio románico en una catedral gótica, dominando los conceptos de arco ojival,
+                arbotantes, vitrales y verticalidad.</p>
+            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                <button onclick="document.getElementById('completion-modal').style.display='none'"
+                    style="background:transparent; color:#fff; border:1px solid #555; padding:12px 24px; font-weight:bold; border-radius:6px; cursor:pointer; font-family:'Outfit',sans-serif; font-size:0.95rem;">Seguir
+                    Explorando</button>
+                <button onclick="window.parent.postMessage({type:'exercise-complete',exercise:'ex6_gotico'},'*')"
+                    style="background:#BA55D3; color:#fff; border:none; padding:12px 24px; font-weight:bold; border-radius:6px; cursor:pointer; font-family:'Outfit',sans-serif; font-size:0.95rem;">Volver
+                    al Tablero</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const state = {
+            currentStep: 1,
+            completedSteps: new Set(),
+            archType: 'round',       // 'round' | 'pointed'
+            buttressLevel: 0,        // 0-100 (how far out buttresses extend)
+            hasStainedGlass: false,
+            verticality: 0,          // 0-100 (column stretch)
+        };
+
+        const CONCEPTS = {
+            1: {
+                icon: '⬆️',
+                title: 'La Flecha hacia el Cielo',
+                body: 'El arco apuntado es una innovación técnica que permite dirigir las cargas hacia el suelo de forma más <strong>vertical</strong>, permitiendo que las estructuras alcancen alturas mucho mayores que antes. El arco de medio punto distribuye las fuerzas lateralmente, necesitando muros gruesos. El arco ojival las canaliza hacia abajo.'
+            },
+            2: {
+                icon: '🦴',
+                title: 'El Esqueleto Exterior',
+                body: 'Al sacar los apoyos al exterior (<strong>arbotantes</strong>), el muro ya no necesita sostener el techo. El edificio deja de ser una caja cerrada para convertirse en un <strong>esqueleto de piedra</strong>. Los contrafuertes reciben los empujes laterales de la bóveda, liberando los muros de su función estructural.'
+            },
+            3: {
+                icon: '🌈',
+                title: 'La Luz Divina',
+                body: 'Al liberar el muro de su función estructural, este se convierte en un <strong>plano transparente</strong>. La luz deja de ser un recurso funcional y se vuelve una experiencia espiritual que transforma el Espacio. Los vitrales narran historias sagradas con luz coloreada, convirtiendo la catedral en una "Biblia de cristal".'
+            },
+            4: {
+                icon: '🗼',
+                title: 'Continuidad Visual',
+                body: 'En el Gótico, la <strong>Línea es protagonista</strong>. El ojo sigue la estructura desde el suelo hasta el techo sin interrupciones, generando una sensación de elevación infinita y ligereza. Los baquetones (columnas adosadas) ascienden sin interrupción hasta fundirse con los nervios de la bóveda.'
+            }
+        };
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let W, H;
+
+        function resize() {
+            const area = document.getElementById('canvas-area');
+            W = canvas.width = area.clientWidth;
+            H = canvas.height = area.clientHeight;
+            draw();
+        }
+        window.addEventListener('resize', resize);
+
+        // ═══════════════════════════════
+        //  DRAWING
+        // ═══════════════════════════════
+        function draw() {
+            ctx.clearRect(0, 0, W, H);
+
+            const cx = W / 2;
+            const groundY = H * 0.85;
+            const vertMult = 1 + state.verticality / 100 * 0.6;
+            const wallH = 200 * vertMult;
+            const wallThickness = 50 - state.buttressLevel * 0.35;
+            const interiorW = 260;
+            const lightLevel = calcLight();
+
+            // Sky / ambient through roof
+            if (lightLevel > 30) {
+                const grad = ctx.createRadialGradient(cx, groundY - wallH, 20, cx, groundY - wallH, interiorW);
+                grad.addColorStop(0, `rgba(255,220,150,${lightLevel / 300})`);
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, W, H);
+            }
+
+            drawGround(cx, groundY);
+            drawStructure(cx, groundY, wallH, wallThickness, interiorW);
+            updateLightMeter(lightLevel);
+        }
+
+        function drawGround(cx, gy) {
+            ctx.fillStyle = '#151515';
+            ctx.fillRect(0, gy, W, H - gy);
+            // Floor tiles
+            ctx.fillStyle = '#1d1d1d';
+            for (let tx = cx - 200; tx < cx + 200; tx += 30) {
+                ctx.fillRect(tx, gy, 28, 6);
+            }
+        }
+
+        function drawStructure(cx, gy, wallH, wallT, intW) {
+            const vertMult = 1 + state.verticality / 100 * 0.6;
+            const wallTop = gy - wallH;
+            const leftInner = cx - intW / 2;
+            const rightInner = cx + intW / 2;
+            const leftOuter = leftInner - wallT;
+            const rightOuter = rightInner + wallT;
+
+            // ── Walls ──
+            ctx.fillStyle = '#3a3228';
+            // Left wall
+            ctx.fillRect(leftOuter, wallTop + 30, wallT, wallH - 30);
+            // Right wall
+            ctx.fillRect(rightInner, wallTop + 30, wallT, wallH - 30);
+
+            // ── Stained glass windows (if enabled) ──
+            if (state.hasStainedGlass) {
+                drawStainedGlass(leftOuter, wallTop + 30, wallT, wallH - 30, 'left');
+                drawStainedGlass(rightInner, wallTop + 30, wallT, wallH - 30, 'right');
+            }
+
+            // ── Arch / Vault ──
+            drawArch(cx, wallTop + 30, intW, state.archType);
+
+            // ── Columns ──
+            const colW = 18;
+            const colColor = '#4a4038';
+            // Left column
+            ctx.fillStyle = colColor;
+            ctx.fillRect(leftInner - colW / 2, wallTop + 30, colW, wallH - 30);
+            // Right column
+            ctx.fillRect(rightInner - colW / 2, wallTop + 30, colW, wallH - 30);
+
+            // Column details (baquetones for gothic)
+            if (state.verticality > 30) {
+                ctx.strokeStyle = '#5a5048';
+                ctx.lineWidth = 2;
+                // Vertical ribs on columns
+                for (let s = -1; s <= 1; s += 2) {
+                    const colX = s === -1 ? leftInner : rightInner;
+                    for (let r = -1; r <= 1; r++) {
+                        ctx.beginPath();
+                        ctx.moveTo(colX + r * 4, gy);
+                        ctx.lineTo(colX + r * 4, wallTop + 30);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // ── Buttresses ──
+            if (state.buttressLevel > 0) {
+                const buttH = wallH * 0.7;
+                const buttW = 25 + state.buttressLevel * 0.15;
+                const buttExt = state.buttressLevel * 0.8;
+
+                // Left buttress
+                ctx.fillStyle = '#3a3228';
+                ctx.fillRect(leftOuter - buttW - buttExt, gy - buttH, buttW, buttH);
+                // Right buttress
+                ctx.fillRect(rightOuter + buttExt, gy - buttH, buttW, buttH);
+
+                // Flying buttresses (arcs)
+                if (state.buttressLevel > 40) {
+                    ctx.strokeStyle = '#4a4038';
+                    ctx.lineWidth = 6;
+                    // Left flying buttress
+                    const fbStartX = leftOuter;
+                    const fbEndX = leftOuter - buttW - buttExt + buttW / 2;
+                    const fbY = wallTop + wallH * 0.35;
+                    ctx.beginPath();
+                    ctx.moveTo(fbStartX, fbY);
+                    ctx.quadraticCurveTo((fbStartX + fbEndX) / 2, fbY - 40, fbEndX, fbY + 30);
+                    ctx.stroke();
+                    // Right flying buttress
+                    const fbStartXR = rightOuter;
+                    const fbEndXR = rightOuter + buttExt + buttW / 2;
+                    ctx.beginPath();
+                    ctx.moveTo(fbStartXR, fbY);
+                    ctx.quadraticCurveTo((fbStartXR + fbEndXR) / 2, fbY - 40, fbEndXR, fbY + 30);
+                    ctx.stroke();
+
+                    // Pinnacles
+                    ctx.fillStyle = '#4a4038';
+                    drawPinnacle(fbEndX, gy - buttH);
+                    drawPinnacle(fbEndXR, gy - buttH);
+                }
+            }
+
+            // ── Interior floor light glow ──
+            if (state.hasStainedGlass) {
+                const glowGrad = ctx.createLinearGradient(leftInner, gy - 10, rightInner, gy - 10);
+                glowGrad.addColorStop(0, 'rgba(255,50,50,0.05)');
+                glowGrad.addColorStop(0.3, 'rgba(50,100,255,0.05)');
+                glowGrad.addColorStop(0.6, 'rgba(255,200,50,0.05)');
+                glowGrad.addColorStop(1, 'rgba(100,255,50,0.05)');
+                ctx.fillStyle = glowGrad;
+                ctx.fillRect(leftInner, gy - 30, intW, 30);
+            }
+        }
+
+        function drawArch(cx, topY, width, type) {
+            const halfW = width / 2;
+            ctx.strokeStyle = '#5a5048';
+            ctx.lineWidth = 8;
+            ctx.fillStyle = '#222';
+
+            if (type === 'round') {
+                // Semicircular arch
+                ctx.beginPath();
+                ctx.arc(cx, topY, halfW, Math.PI, 0, false);
+                ctx.stroke();
+                // Fill above arch
+                ctx.beginPath();
+                ctx.arc(cx, topY, halfW - 4, Math.PI, 0, false);
+                ctx.lineTo(cx + halfW - 4, topY - halfW);
+                ctx.lineTo(cx - halfW + 4, topY - halfW);
+                ctx.closePath();
+                ctx.fillStyle = '#2a2520';
+                ctx.fill();
+            } else {
+                // Pointed (ogival) arch
+                const peakY = topY - halfW * 1.3;
+                ctx.beginPath();
+                ctx.moveTo(cx - halfW, topY);
+                ctx.quadraticCurveTo(cx - halfW * 0.3, peakY - 20, cx, peakY);
+                ctx.quadraticCurveTo(cx + halfW * 0.3, peakY - 20, cx + halfW, topY);
+                ctx.stroke();
+
+                // Rib vault lines
+                ctx.strokeStyle = '#4a4038';
+                ctx.lineWidth = 3;
+                // Cross ribs
+                ctx.beginPath();
+                ctx.moveTo(cx - halfW, topY);
+                ctx.quadraticCurveTo(cx, peakY + 10, cx + halfW, topY);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(cx, peakY);
+                ctx.lineTo(cx, topY);
+                ctx.stroke();
+            }
+        }
+
+        function drawStainedGlass(wallX, wallTop, wallT, wallH, side) {
+            const numWindows = 2;
+            const winH = wallH * 0.3;
+            const winW = wallT * 0.65;
+            const winMargin = wallH * 0.15;
+
+            for (let i = 0; i < numWindows; i++) {
+                const wy = wallTop + winMargin + i * (winH + 20);
+                const wx = wallX + (wallT - winW) / 2;
+
+                // Window frame
+                ctx.fillStyle = '#1a1a1a';
+                ctx.fillRect(wx, wy, winW, winH);
+
+                // Colored glass panels
+                const colors = [
+                    'rgba(220,30,30,0.6)',
+                    'rgba(30,80,220,0.7)',
+                    'rgba(220,180,30,0.6)',
+                    'rgba(30,180,80,0.5)',
+                    'rgba(180,30,220,0.5)',
+                    'rgba(30,180,220,0.6)'
+                ];
+
+                const panelH = winH / 3;
+                for (let p = 0; p < 3; p++) {
+                    ctx.fillStyle = colors[(i * 3 + p) % colors.length];
+                    ctx.fillRect(wx + 2, wy + p * panelH + 2, winW - 4, panelH - 4);
+                }
+
+                // Pointed top for gothic windows
+                if (state.archType === 'pointed') {
+                    ctx.fillStyle = colors[(i * 2 + 1) % colors.length];
+                    ctx.beginPath();
+                    ctx.moveTo(wx, wy);
+                    ctx.lineTo(wx + winW / 2, wy - 12);
+                    ctx.lineTo(wx + winW, wy);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+
+                // Light glow from windows
+                const glowDir = side === 'left' ? 1 : -1;
+                const glow = ctx.createLinearGradient(wx, wy, wx + glowDir * 80, wy);
+                glow.addColorStop(0, 'rgba(255,200,100,0.08)');
+                glow.addColorStop(1, 'transparent');
+                ctx.fillStyle = glow;
+                ctx.fillRect(wx + (glowDir === 1 ? winW : -80), wy, 80, winH);
+            }
+        }
+
+        function drawPinnacle(x, y) {
+            ctx.beginPath();
+            ctx.moveTo(x - 6, y);
+            ctx.lineTo(x, y - 20);
+            ctx.lineTo(x + 6, y);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function calcLight() {
+            let light = 10;
+            if (state.archType === 'pointed') light += 10;
+            if (state.buttressLevel > 0) light += state.buttressLevel * 0.2;
+            if (state.hasStainedGlass) light += 35;
+            if (state.verticality > 0) light += state.verticality * 0.15;
+            return Math.min(light, 100);
+        }
+
+        function updateLightMeter(val) {
+            document.getElementById('lightFill').style.width = val + '%';
+        }
+
+        // ═══════════════════════════════
+        //  TUTOR MESSAGES
+        // ═══════════════════════════════
+        const TUTOR = {
+            1: 'Lee el concepto teórico y luego haz clic en el botón <strong>"⌒ Ojival"</strong> en el panel inferior izquierdo para reemplazar el arco de medio punto por un arco apuntado.',
+            '1_done': '¡Bien! El arco ahora es ojival. Haz clic en <strong>"Paso 2: Liberar el Muro"</strong> para continuar.',
+            2: 'Mueve el <strong>deslizador de contrafuertes</strong> hasta al menos 30% para crear los apoyos exteriores. Luego haz clic en <strong>"Confirmar Estructura"</strong>.',
+            '2_done': '¡Los contrafuertes están listos! Haz clic en <strong>"Paso 3: Perforar el Límite"</strong> para insertar los vitrales.',
+            3: 'Haz clic en el botón <strong>"🌈 Vitrales"</strong> para reemplazar los muros cerrados con vitrales de colores. Observa cómo cambia el nivel de luz interior.',
+            '3_done': '¡La catedral se llena de luz! Haz clic en <strong>"Paso 4: Añadir Verticalidad"</strong> para el último paso.',
+            4: 'Mueve el <strong>deslizador de verticalidad</strong> hasta al menos 40% para estirar las columnas hacia la bóveda. Luego haz clic en <strong>"Confirmar Verticalidad"</strong>.',
+            '4_done': '🎉 ¡Felicidades! Has transformado el edificio románico en una catedral gótica. Haz clic en <strong>"✓ Completar Ejercicio"</strong> para finalizar.',
+        };
+
+        function updateTutor() {
+            const step = state.currentStep;
+            const key = state.completedSteps.has(step) ? step + '_done' : step;
+            const msg = TUTOR[key] || TUTOR[step];
+            const el = document.getElementById('tutorText');
+            if (el && msg) {
+                el.innerHTML = msg;
+                const bubble = document.getElementById('tutor-bubble');
+                bubble.classList.remove('pulse');
+                void bubble.offsetWidth;
+                bubble.classList.add('pulse');
+            }
+        }
+
+        // ═══════════════════════════════
+        //  STEP LOGIC
+        // ═══════════════════════════════
+        function activateStep(step) {
+            if (step > 1 && !state.completedSteps.has(step - 1)) return;
+            state.currentStep = step;
+            updateUI();
+            showConcept(step);
+            updateTutor();
+        }
+
+        function completeStep(step) {
+            state.completedSteps.add(step);
+            updateUI();
+            draw();
+            updateTutor();
+        }
+
+        function updateUI() {
+            document.querySelectorAll('.step-card').forEach(card => {
+                const s = parseInt(card.dataset.step);
+                card.classList.remove('active', 'locked', 'done');
+                if (state.completedSteps.has(s)) card.classList.add('done');
+                else if (s === state.currentStep) card.classList.add('active');
+                else if (s > 1 && !state.completedSteps.has(s - 1)) card.classList.add('locked');
+            });
+            renderControls();
+            document.getElementById('btnFinish').style.display = state.completedSteps.size >= 4 ? 'block' : 'none';
+        }
+
+        function renderControls() {
+            const ctrl = document.getElementById('controls');
+            const step = state.currentStep;
+
+            if (state.completedSteps.has(step)) {
+                ctrl.innerHTML = '<p style="color:#50c878;font-size:0.85rem;text-align:center;">✓ Paso completado</p>';
+                return;
+            }
+
+            if (step === 1) {
+                ctrl.innerHTML = `
+                    <div class="control-group">
+                        <div class="control-label">Tipo de Arco</div>
+                        <div class="btn-row">
+                            <button class="btn-action ${state.archType === 'round' ? 'selected' : ''}" onclick="setArch('round')">◠ Medio Punto</button>
+                            <button class="btn-action ${state.archType === 'pointed' ? 'selected' : ''}" onclick="setArch('pointed')">⌒ Ojival</button>
+                        </div>
+                    </div>`;
+            } else if (step === 2) {
+                ctrl.innerHTML = `
+                    <div class="control-group">
+                        <div class="control-label">Extensión de Contrafuertes</div>
+                        <input type="range" min="0" max="100" value="${state.buttressLevel}" oninput="setButtress(this.value)">
+                        <div class="slider-value">${state.buttressLevel}%</div>
+                    </div>
+                    <div class="btn-row" style="margin-top:10px;">
+                        <button class="btn-action" onclick="confirmButtress()" ${state.buttressLevel < 30 ? 'disabled' : ''}>Confirmar Estructura</button>
+                    </div>`;
+            } else if (step === 3) {
+                ctrl.innerHTML = `
+                    <div class="control-group">
+                        <div class="control-label">Vitrales</div>
+                        <div class="btn-row">
+                            <button class="btn-action ${!state.hasStainedGlass ? 'selected' : ''}" onclick="setGlass(false)">🧱 Muro Cerrado</button>
+                            <button class="btn-action ${state.hasStainedGlass ? 'selected' : ''}" onclick="setGlass(true)">🌈 Vitrales</button>
+                        </div>
+                    </div>`;
+            } else if (step === 4) {
+                ctrl.innerHTML = `
+                    <div class="control-group">
+                        <div class="control-label">Verticalidad</div>
+                        <input type="range" min="0" max="100" value="${state.verticality}" oninput="setVerticality(this.value)">
+                        <div class="slider-value">${state.verticality}%</div>
+                    </div>
+                    <div class="btn-row" style="margin-top:10px;">
+                        <button class="btn-action" onclick="confirmVertical()" ${state.verticality < 40 ? 'disabled' : ''}>Confirmar Verticalidad</button>
+                    </div>`;
+            }
+        }
+
+        // ── Actions ──
+        function setArch(type) {
+            state.archType = type;
+            draw();
+            renderControls();
+            if (type === 'pointed') completeStep(1);
+        }
+
+        function setButtress(val) {
+            state.buttressLevel = parseInt(val);
+            document.querySelector('.slider-value').textContent = val + '%';
+            draw();
+            // Enable/disable confirm button
+            const btn = document.querySelector('#controls .btn-action');
+            if (btn) btn.disabled = state.buttressLevel < 30;
+        }
+
+        function confirmButtress() {
+            if (state.buttressLevel >= 30) completeStep(2);
+        }
+
+        function setGlass(val) {
+            state.hasStainedGlass = val;
+            draw();
+            renderControls();
+            if (val) completeStep(3);
+        }
+
+        function setVerticality(val) {
+            state.verticality = parseInt(val);
+            document.querySelector('.slider-value').textContent = val + '%';
+            draw();
+            const btn = document.querySelector('#controls .btn-action');
+            if (btn) btn.disabled = state.verticality < 40;
+        }
+
+        function confirmVertical() {
+            if (state.verticality >= 40) completeStep(4);
+        }
+
+        // ── Modal ──
+        function showConcept(step) {
+            if (state.completedSteps.has(step)) return;
+            const c = CONCEPTS[step];
+            document.getElementById('modalIcon').textContent = c.icon;
+            document.getElementById('modalTitle').textContent = c.title;
+            document.getElementById('modalBody').innerHTML = c.body;
+            document.getElementById('modal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+
+        function finishExercise() {
+            document.getElementById('completion-modal').style.display = 'flex';
+        }
+
+        // INIT
+        resize();
+        updateUI();
+        showConcept(1);
+    </script>
+</body>
+
+</html>

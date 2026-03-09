@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 1: La Trama y el Orden</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #0a0a0a;
+            font-family: 'Outfit', sans-serif;
+            color: #fff;
+        }
+
+        #app {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        #sidebar {
+            width: 340px;
+            background: rgba(0, 0, 0, 0.5);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        #canvas-area {
+            flex: 1;
+            position: relative;
+        }
+
+        canvas#scene {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .exercise-title {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #4CAF50;
+            margin-bottom: 4px;
+        }
+
+        .exercise-name {
+            font-size: 1.4rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .step-indicator {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 25px;
+        }
+
+        .step-dot {
+            flex: 1;
+            height: 4px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.4s;
+        }
+
+        .step-dot.active {
+            background: #4CAF50;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+        }
+
+        .step-dot.done {
+            background: rgba(76, 175, 80, 0.4);
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        .step-card.active {
+            display: block;
+            border-color: rgba(76, 175, 80, 0.3);
+        }
+
+        .step-card h3 {
+            font-size: 1.05rem;
+            color: #4CAF50;
+            margin-bottom: 8px;
+        }
+
+        .step-card p {
+            font-size: 0.85rem;
+            color: #999;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.15);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .control-group {
+            margin-top: 12px;
+        }
+
+        .control-group label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .control-group select,
+        .control-group input[type="range"] {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #fff;
+            padding: 8px 10px;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .control-group select option {
+            background: #1a1a1a;
+        }
+
+        .slider-value {
+            text-align: right;
+            font-size: 0.8rem;
+            color: #4CAF50;
+            margin-top: 4px;
+        }
+
+        /* Height selector (step 4) */
+        .height-btns {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .height-btn {
+            flex: 1;
+            padding: 8px 4px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #aaa;
+            font-size: 0.8rem;
+            font-family: inherit;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .height-btn.selected {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: #4CAF50;
+            color: #4CAF50;
+        }
+
+        /* Modal */
+        #concept-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        #concept-modal.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border-left: 5px solid #4CAF50;
+            padding: 35px;
+            max-width: 500px;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-title {
+            color: #4CAF50;
+            font-size: 1.3rem;
+            font-weight: 900;
+            margin-bottom: 12px;
+        }
+
+        .modal-body {
+            color: #bbb;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .btn-continue {
+            background: #4CAF50;
+            color: #000;
+            border: none;
+            padding: 12px 28px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .btn-continue:hover {
+            filter: brightness(1.15);
+        }
+
+        /* Tutor */
+        #tutor-bubble {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            max-width: 340px;
+            padding: 16px 20px;
+            background: rgba(12, 12, 12, 0.95);
+            border-left: 4px solid #4CAF50;
+            border-radius: 14px;
+            backdrop-filter: blur(12px);
+            z-index: 50;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(76, 175, 80, 0.15);
+        }
+
+        #tutor-bubble.pulse {
+            animation: tutorPulse 0.5s ease;
+        }
+
+        @keyframes tutorPulse {
+            0% {
+                transform: scale(1)
+            }
+
+            50% {
+                transform: scale(1.03);
+                box-shadow: 0 8px 32px rgba(76, 175, 80, 0.2)
+            }
+
+            100% {
+                transform: scale(1)
+            }
+        }
+
+        .tutor-avatar {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .tutor-content {
+            flex: 1;
+        }
+
+        .tutor-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #4CAF50;
+            margin-bottom: 4px;
+        }
+
+        .tutor-text {
+            font-size: 0.88rem;
+            color: #ddd;
+            line-height: 1.5;
+        }
+
+        /* Completion */
+        #completion-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+
+        .completion-box {
+            background: #1a1a1a;
+            border-left: 5px solid #4CAF50;
+            padding: 40px;
+            max-width: 480px;
+            border-radius: 14px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            text-align: center;
+        }
+
+        /* Grid overlay info */
+        .info-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            color: #aaa;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 10;
+        }
+
+        .info-badge strong {
+            color: #4CAF50;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="sidebar">
+            <div class="exercise-title">Bloque 4 · Ejercicio 1</div>
+            <div class="exercise-name">La Trama y el Orden</div>
+
+            <div class="step-indicator">
+                <div class="step-dot active" data-step="0"></div>
+                <div class="step-dot" data-step="1"></div>
+                <div class="step-dot" data-step="2"></div>
+                <div class="step-dot" data-step="3"></div>
+                <div class="step-dot" data-step="4"></div>
+            </div>
+
+            <!-- Step 0: Trazar Red Base -->
+            <div class="step-card active" data-step="0">
+                <h3>① Trazar la Red Base</h3>
+                <p>Haz clic en "Proyectar Malla" para generar las líneas guía que organizarán el territorio. La retícula
+                    define cómo se moverán los ciudadanos.</p>
+                <div class="control-group">
+                    <label>Densidad de malla</label>
+                    <input type="range" id="gridDensity" min="4" max="8" value="6"
+                        oninput="document.getElementById('gridDensityVal').textContent = this.value + ' × ' + this.value">
+                    <div class="slider-value" id="gridDensityVal">6 × 6</div>
+                </div>
+                <button class="btn btn-primary" onclick="applyGrid()">Proyectar Malla Urbana</button>
+            </div>
+
+            <!-- Step 1: Definir Pauta Central -->
+            <div class="step-card" data-step="1">
+                <h3>② Definir la Pauta Central</h3>
+                <p>Haz clic en una celda de la fila central para arrastrar la línea de la <strong>Gran Avenida</strong>
+                    que organizará los flujos principales del sector.</p>
+                <button class="btn btn-primary" id="btnConfirmAvenue" onclick="confirmAvenue()" disabled>Confirmar Gran
+                    Avenida</button>
+            </div>
+
+            <!-- Step 2: Establecer Límites -->
+            <div class="step-card" data-step="2">
+                <h3>③ Establecer los Límites</h3>
+                <p>Haz clic en las manzanas del <strong>borde</strong> para ubicar planos verticales (fachadas) que
+                    definan el límite entre lo público y lo privado.</p>
+                <div class="slider-value" id="facadeCount">0 fachadas colocadas</div>
+                <button class="btn btn-primary" id="btnConfirmFacades" onclick="confirmFacades()" disabled>Confirmar
+                    Límites (mín. 6)</button>
+            </div>
+
+            <!-- Step 3: Ocupar con Masa -->
+            <div class="step-card" data-step="3">
+                <h3>④ Ocupar con Masa</h3>
+                <p>Haz clic en las manzanas vacías para arrastrar volúmenes de diferentes alturas sobre la malla. Busca
+                    densidad equilibrada.</p>
+                <div class="control-group">
+                    <label>Altura del edificio</label>
+                    <div class="height-btns">
+                        <button class="height-btn selected" onclick="selectHeight(1, this)">1P</button>
+                        <button class="height-btn" onclick="selectHeight(2, this)">2P</button>
+                        <button class="height-btn" onclick="selectHeight(3, this)">3P</button>
+                        <button class="height-btn" onclick="selectHeight(4, this)">4P</button>
+                        <button class="height-btn" onclick="selectHeight(5, this)">5P</button>
+                    </div>
+                </div>
+                <div class="slider-value" id="buildingCount">0 edificios colocados</div>
+                <button class="btn btn-primary" id="btnConfirmBuildings" onclick="confirmBuildings()" disabled>Confirmar
+                    Masa (mín. 8)</button>
+            </div>
+
+            <!-- Step 4: Los Órdenes Clásicos (organization) -->
+            <div class="step-card" data-step="4">
+                <h3>⑤ Optimizar Movimiento</h3>
+                <p>El sector está construido. Observa la ciudad resultante y valida que el movimiento es fluido, la
+                    densidad equilibrada y los límites definidos.</p>
+                <button class="btn btn-primary" id="btnFinish" onclick="finishExercise()">Finalizar Simulación</button>
+            </div>
+        </div>
+
+        <div id="canvas-area">
+            <canvas id="scene"></canvas>
+            <div class="info-badge" id="infoBadge">
+                <strong>Malla:</strong> Sin aplicar · <strong>Avenida:</strong> — · <strong>Fachadas:</strong> 0 ·
+                <strong>Edificios:</strong> 0
+            </div>
+        </div>
+    </div>
+
+    <!-- Tutor -->
+    <div id="tutor-bubble">
+        <div class="tutor-avatar">👩‍🏫</div>
+        <div class="tutor-content">
+            <div class="tutor-label">Tutor</div>
+            <div class="tutor-text" id="tutorText">Bienvenido al urbanismo. Configura la <strong>densidad de la
+                    malla</strong> y haz clic en "Proyectar Malla Urbana".</div>
+        </div>
+    </div>
+
+    <!-- Concept Modal -->
+    <div id="concept-modal">
+        <div class="modal-content">
+            <div class="modal-title" id="modalTitle"></div>
+            <div class="modal-body" id="modalBody"></div>
+            <button class="btn-continue" onclick="closeModal()">Entendido</button>
+        </div>
+    </div>
+
+    <!-- Completion Modal -->
+    <div id="completion-modal">
+        <div class="completion-box">
+            <div style="font-size:3rem;margin-bottom:15px;">🗺️</div>
+            <h2 style="color:#4CAF50;margin-bottom:15px;">¡Simulación Completada!</h2>
+            <p style="color:#ddd; line-height:1.6; margin-bottom:25px;">
+                Has organizado un sector urbano legible y conectado. Comprendiste cómo la malla, la pauta, los límites y
+                la masa urbana se articulan para crear ciudad.
+            </p>
+            <button class="btn" style="background:transparent;color:#fff;border:1px solid #555;margin-bottom:10px;"
+                onclick="document.getElementById('completion-modal').style.display='none'">Seguir Explorando</button>
+            <button class="btn btn-primary"
+                onclick="window.parent.postMessage({type:'exercise-complete',exercise:'ex7_trama'},'*')">Volver al
+                Tablero</button>
+        </div>
+    </div>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // ══════════════════════════════════════════
+        // STATE
+        // ══════════════════════════════════════════
+        let currentStep = 0;
+        let gridSize = 6;
+        let gridApplied = false;
+        let selectedBuildingHeight = 1;
+
+        // Data arrays
+        let cells = [];          // {row, col, mesh, type:'empty'|'avenue'|'facade'|'building', height}
+        let avenueRow = -1;
+        let facadeCount = 0;
+        let buildingCount = 0;
+
+        const CELL_SIZE = 4;
+        const CELL_GAP = 0.3;
+
+        const TUTOR = {
+            0: 'Configura la <strong>densidad de la malla</strong> y haz clic en "Proyectar Malla Urbana" para generar el territorio.',
+            1: 'Haz clic en las celdas de <strong>una fila</strong> para trazar la <strong>Gran Avenida</strong> que será el eje principal del sector.',
+            2: 'Haz clic en las manzanas del <strong>borde exterior</strong> para colocar fachadas (planos verticales) que definan los límites. Necesitas al menos 6.',
+            3: 'Haz clic en las <strong>manzanas vacías</strong> para colocar edificios. Selecciona la altura con los botones. Necesitas al menos 8.',
+            4: '🎉 ¡Sector completo! Observa tu ciudad en 3D. Puedes <strong>rotar</strong> la cámara arrastrando el ratón. Finaliza cuando estés listo.'
+        };
+
+        // ══════════════════════════════════════════
+        // THREE.JS SETUP
+        // ══════════════════════════════════════════
+        const canvasEl = document.getElementById('scene');
+        const renderer = new THREE.WebGLRenderer({ canvas: canvasEl, antialias: true, alpha: false });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.setClearColor(0x0d1117);
+
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x0d1117, 0.012);
+
+        // Isometric-like orthographic camera
+        const frustumSize = 40;
+        let aspect = 1;
+        const camera = new THREE.OrthographicCamera(-frustumSize * aspect / 2, frustumSize * aspect / 2, frustumSize / 2, -frustumSize / 2, 0.1, 200);
+
+        // Set isometric angle
+        const ISO_ANGLE = Math.PI / 6; // 30 degrees
+        const cameraDistance = 60;
+        camera.position.set(cameraDistance * Math.cos(ISO_ANGLE), cameraDistance * 0.7, cameraDistance * Math.sin(ISO_ANGLE));
+        camera.lookAt(0, 0, 0);
+
+        // Lights
+        const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambient);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(30, 50, 20);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.set(2048, 2048);
+        dirLight.shadow.camera.near = 1;
+        dirLight.shadow.camera.far = 120;
+        dirLight.shadow.camera.left = -40;
+        dirLight.shadow.camera.right = 40;
+        dirLight.shadow.camera.top = 40;
+        dirLight.shadow.camera.bottom = -40;
+        scene.add(dirLight);
+
+        const fillLight = new THREE.DirectionalLight(0x88aaff, 0.3);
+        fillLight.position.set(-20, 30, -20);
+        scene.add(fillLight);
+
+        // Ground plane
+        const groundGeo = new THREE.PlaneGeometry(100, 100);
+        const groundMat = new THREE.MeshStandardMaterial({ color: 0x1a1e24, roughness: 1 });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -0.05;
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        // Grid group (will hold all city elements)
+        const cityGroup = new THREE.Group();
+        scene.add(cityGroup);
+
+        // Raycaster for click detection
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        // ══════════════════════════════════════════
+        // CAMERA CONTROLS (simple orbit)
+        // ══════════════════════════════════════════
+        let isDragging = false;
+        let prevMouse = { x: 0, y: 0 };
+        let cameraAngle = Math.PI / 4;  // horizontal angle
+        let cameraPitch = 0.65;          // vertical angle (0 = flat, 1 = top-down)
+        let cameraZoom = frustumSize;
+
+        canvasEl.addEventListener('mousedown', (e) => { isDragging = true; prevMouse = { x: e.clientX, y: e.clientY }; });
+        canvasEl.addEventListener('mouseup', () => { isDragging = false; });
+        canvasEl.addEventListener('mouseleave', () => { isDragging = false; });
+        canvasEl.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - prevMouse.x;
+            const dy = e.clientY - prevMouse.y;
+            cameraAngle += dx * 0.005;
+            cameraPitch = Math.max(0.2, Math.min(0.9, cameraPitch + dy * 0.003));
+            prevMouse = { x: e.clientX, y: e.clientY };
+            updateCameraPosition();
+        });
+        canvasEl.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            cameraZoom = Math.max(20, Math.min(70, cameraZoom + e.deltaY * 0.05));
+            updateCameraPosition();
+        }, { passive: false });
+
+        function updateCameraPosition() {
+            const dist = 60;
+            camera.position.set(
+                dist * Math.cos(cameraAngle) * (1 - cameraPitch * 0.5),
+                dist * cameraPitch,
+                dist * Math.sin(cameraAngle) * (1 - cameraPitch * 0.5)
+            );
+            camera.lookAt(0, 0, 0);
+
+            const a = cameraZoom / 2 * aspect;
+            const b = cameraZoom / 2;
+            camera.left = -a; camera.right = a; camera.top = b; camera.bottom = -b;
+            camera.updateProjectionMatrix();
+        }
+
+        // ══════════════════════════════════════════
+        // CLICK HANDLER
+        // ══════════════════════════════════════════
+        canvasEl.addEventListener('click', (e) => {
+            if (isDragging) return;
+            const rect = canvasEl.getBoundingClientRect();
+            mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const meshes = cells.filter(c => c.mesh).map(c => c.mesh);
+            const hits = raycaster.intersectObjects(meshes);
+
+            if (hits.length > 0) {
+                const hitMesh = hits[0].object;
+                const cell = cells.find(c => c.mesh === hitMesh);
+                if (cell) handleCellClick(cell);
+            }
+        });
+
+        function handleCellClick(cell) {
+            if (currentStep === 1) {
+                // Avenue: click on cells to mark as avenue
+                if (cell.type === 'empty') {
+                    cell.type = 'avenue';
+                    avenueRow = cell.row;
+                    setCellAppearance(cell);
+
+                    // Auto-fill entire row
+                    cells.filter(c => c.row === cell.row && c.type === 'empty').forEach(c => {
+                        c.type = 'avenue';
+                        setCellAppearance(c);
+                    });
+                    document.getElementById('btnConfirmAvenue').disabled = false;
+                }
+            } else if (currentStep === 2) {
+                // Facades: click edge cells
+                if (cell.type === 'empty' && isEdgeCell(cell)) {
+                    cell.type = 'facade';
+                    addFacadeMesh(cell);
+                    facadeCount++;
+                    document.getElementById('facadeCount').textContent = `${facadeCount} fachadas colocadas`;
+                    if (facadeCount >= 6) document.getElementById('btnConfirmFacades').disabled = false;
+                    updateInfoBadge();
+                }
+            } else if (currentStep === 3) {
+                // Buildings: click empty cells
+                if (cell.type === 'empty') {
+                    cell.type = 'building';
+                    cell.height = selectedBuildingHeight;
+                    addBuildingMesh(cell);
+                    buildingCount++;
+                    document.getElementById('buildingCount').textContent = `${buildingCount} edificios colocados`;
+                    if (buildingCount >= 8) document.getElementById('btnConfirmBuildings').disabled = false;
+                    updateInfoBadge();
+                }
+            }
+        }
+
+        function isEdgeCell(cell) {
+            return cell.row === 0 || cell.row === gridSize - 1 || cell.col === 0 || cell.col === gridSize - 1;
+        }
+
+        // ══════════════════════════════════════════
+        // GRID GENERATION
+        // ══════════════════════════════════════════
+        function applyGrid() {
+            gridSize = parseInt(document.getElementById('gridDensity').value);
+            gridApplied = true;
+
+            // Clear old
+            while (cityGroup.children.length > 0) {
+                cityGroup.remove(cityGroup.children[0]);
+            }
+            cells = [];
+
+            const totalSize = gridSize * (CELL_SIZE + CELL_GAP) - CELL_GAP;
+            const offset = totalSize / 2;
+
+            // Create street grid lines
+            const lineMat = new THREE.LineBasicMaterial({ color: 0x4CAF50, transparent: true, opacity: 0.25 });
+            for (let i = 0; i <= gridSize; i++) {
+                const pos = i * (CELL_SIZE + CELL_GAP) - offset - CELL_GAP / 2;
+                // Horizontal lines
+                const hGeo = new THREE.BufferGeometry().setFromPoints([
+                    new THREE.Vector3(-offset - CELL_GAP / 2, 0.01, pos),
+                    new THREE.Vector3(totalSize - offset + CELL_GAP / 2, 0.01, pos)
+                ]);
+                cityGroup.add(new THREE.Line(hGeo, lineMat));
+                // Vertical lines
+                const vGeo = new THREE.BufferGeometry().setFromPoints([
+                    new THREE.Vector3(pos, 0.01, -offset - CELL_GAP / 2),
+                    new THREE.Vector3(pos, 0.01, totalSize - offset + CELL_GAP / 2)
+                ]);
+                cityGroup.add(new THREE.Line(vGeo, lineMat));
+            }
+
+            // Create cell meshes (flat blocks)
+            const cellGeo = new THREE.BoxGeometry(CELL_SIZE, 0.15, CELL_SIZE);
+            for (let r = 0; r < gridSize; r++) {
+                for (let c = 0; c < gridSize; c++) {
+                    const mat = new THREE.MeshStandardMaterial({
+                        color: 0x1e2530, roughness: 0.8, metalness: 0.1
+                    });
+                    const mesh = new THREE.Mesh(cellGeo, mat);
+                    mesh.position.set(
+                        c * (CELL_SIZE + CELL_GAP) - offset + CELL_SIZE / 2,
+                        0.075,
+                        r * (CELL_SIZE + CELL_GAP) - offset + CELL_SIZE / 2
+                    );
+                    mesh.receiveShadow = true;
+                    mesh.castShadow = false;
+                    cityGroup.add(mesh);
+
+                    cells.push({ row: r, col: c, mesh, type: 'empty', height: 0, extra: null });
+                }
+            }
+
+            updateInfoBadge();
+            showConcept('La Malla como Organizadora', 'Al igual que en un edificio, la ciudad necesita un andamiaje invisible que regule la posición de las manzanas y las calles. Una retícula clara facilita la orientación y optimiza el movimiento. Has proyectado las líneas guía sobre el territorio.');
+        }
+
+        // ══════════════════════════════════════════
+        // CELL APPEARANCES
+        // ══════════════════════════════════════════
+        function setCellAppearance(cell) {
+            if (cell.type === 'avenue') {
+                cell.mesh.material.color.setHex(0x4CAF50);
+                cell.mesh.material.emissive = new THREE.Color(0x4CAF50);
+                cell.mesh.material.emissiveIntensity = 0.3;
+                // Raise slightly and extend
+                cell.mesh.scale.y = 2;
+                cell.mesh.position.y = 0.15;
+            }
+        }
+
+        function addFacadeMesh(cell) {
+            cell.mesh.material.color.setHex(0xFFB300);
+            cell.mesh.material.emissive = new THREE.Color(0xFFB300);
+            cell.mesh.material.emissiveIntensity = 0.15;
+
+            // Add vertical plane (facade wall)
+            const wallGeo = new THREE.BoxGeometry(CELL_SIZE, 3, 0.15);
+            const wallMat = new THREE.MeshStandardMaterial({
+                color: 0xFFB300, transparent: true, opacity: 0.7, roughness: 0.5
+            });
+            const wall = new THREE.Mesh(wallGeo, wallMat);
+            wall.position.copy(cell.mesh.position);
+            wall.position.y = 1.5;
+            wall.castShadow = true;
+            cityGroup.add(wall);
+            cell.extra = wall;
+        }
+
+        function addBuildingMesh(cell) {
+            const h = cell.height;
+            const bHeight = h * 2;
+            const buildingGeo = new THREE.BoxGeometry(CELL_SIZE * 0.85, bHeight, CELL_SIZE * 0.85);
+
+            // Color varies by height
+            const colors = [0x42A5F5, 0x2196F3, 0x1976D2, 0x1565C0, 0x0D47A1];
+            const buildingMat = new THREE.MeshStandardMaterial({
+                color: colors[h - 1], roughness: 0.6, metalness: 0.2
+            });
+            const building = new THREE.Mesh(buildingGeo, buildingMat);
+            building.position.copy(cell.mesh.position);
+            building.position.y = bHeight / 2;
+            building.castShadow = true;
+            building.receiveShadow = true;
+            cityGroup.add(building);
+
+            // Roof accent
+            const roofGeo = new THREE.BoxGeometry(CELL_SIZE * 0.9, 0.15, CELL_SIZE * 0.9);
+            const roofMat = new THREE.MeshStandardMaterial({ color: 0x90CAF9, roughness: 0.3 });
+            const roof = new THREE.Mesh(roofGeo, roofMat);
+            roof.position.copy(building.position);
+            roof.position.y = bHeight + 0.075;
+            cityGroup.add(roof);
+
+            // Animate building rise
+            building.scale.y = 0;
+            roof.visible = false;
+            const targetY = building.position.y;
+            building.position.y = 0;
+
+            const startTime = performance.now();
+            function animateRise(t) {
+                const elapsed = (t - startTime) / 400;
+                if (elapsed < 1) {
+                    const ease = 1 - Math.pow(1 - elapsed, 3);
+                    building.scale.y = ease;
+                    building.position.y = targetY * ease;
+                    requestAnimationFrame(animateRise);
+                } else {
+                    building.scale.y = 1;
+                    building.position.y = targetY;
+                    roof.visible = true;
+                    roof.position.y = bHeight + 0.075;
+                }
+            }
+            requestAnimationFrame(animateRise);
+
+            cell.extra = building;
+            // Dim original cell
+            cell.mesh.material.color.setHex(0x263238);
+        }
+
+        // ══════════════════════════════════════════
+        // STEP ACTIONS
+        // ══════════════════════════════════════════
+        function confirmAvenue() {
+            showConcept('El Eje y la Jerarquía', 'La Gran Avenida es el canal principal que dirige el crecimiento del sector. Este eje organiza los flujos más pesados y se convierte en la referencia visual para los habitantes. El eje (pauta) transforma un territorio neutro en un sistema orientado.');
+        }
+
+        function confirmFacades() {
+            showConcept('El Plano como Límite Urbano', 'Las fachadas de los edificios no son solo paredes: son los límites que contienen el espacio de la calle. Un borde bien definido genera seguridad y claridad espacial. Un plano bien ubicado puede invitar al encuentro o generar aislamiento.');
+        }
+
+        function confirmBuildings() {
+            showConcept('Masa Urbana y Densidad', 'La agrupación de edificios de diferentes alturas crea densidad equilibrada. Demasiada masa genera congestión; muy poca genera dispersión. El urbanista busca el balance que garantice vitalidad sin perder habitabilidad.');
+        }
+
+        function finishExercise() {
+            document.getElementById('completion-modal').style.display = 'flex';
+        }
+
+        function selectHeight(h, btn) {
+            selectedBuildingHeight = h;
+            document.querySelectorAll('.height-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        }
+
+        // ══════════════════════════════════════════
+        // MODAL & TUTOR
+        // ══════════════════════════════════════════
+        function showConcept(title, body) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').textContent = body;
+            document.getElementById('concept-modal').classList.add('visible');
+        }
+
+        function closeModal() {
+            document.getElementById('concept-modal').classList.remove('visible');
+            currentStep++;
+            updateUI();
+            updateTutor();
+        }
+
+        function updateTutor() {
+            const msg = TUTOR[currentStep];
+            const el = document.getElementById('tutorText');
+            if (el && msg) {
+                el.innerHTML = msg;
+                const bubble = document.getElementById('tutor-bubble');
+                bubble.classList.remove('pulse');
+                void bubble.offsetWidth;
+                bubble.classList.add('pulse');
+            }
+        }
+
+        function updateUI() {
+            document.querySelectorAll('.step-dot').forEach((dot, i) => {
+                dot.classList.remove('active', 'done');
+                if (i < currentStep) dot.classList.add('done');
+                else if (i === currentStep) dot.classList.add('active');
+            });
+            document.querySelectorAll('.step-card').forEach((card, i) => {
+                card.classList.remove('active');
+                if (i === currentStep) card.classList.add('active');
+            });
+        }
+
+        function updateInfoBadge() {
+            const badge = document.getElementById('infoBadge');
+            const mallaText = gridApplied ? `${gridSize}×${gridSize}` : 'Sin aplicar';
+            const aveText = avenueRow >= 0 ? `Fila ${avenueRow + 1}` : '—';
+            badge.innerHTML = `<strong>Malla:</strong> ${mallaText} · <strong>Avenida:</strong> ${aveText} · <strong>Fachadas:</strong> ${facadeCount} · <strong>Edificios:</strong> ${buildingCount}`;
+        }
+
+        // ══════════════════════════════════════════
+        // RESIZE & RENDER LOOP
+        // ══════════════════════════════════════════
+        function onResize() {
+            const area = document.getElementById('canvas-area');
+            const w = area.clientWidth;
+            const h = area.clientHeight;
+            renderer.setSize(w, h);
+            aspect = w / h;
+            updateCameraPosition();
+        }
+
+        window.addEventListener('resize', onResize);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+
+        // Init
+        onResize();
+        animate();
+    </script>
+</body>
+
+</html>

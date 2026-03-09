@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 2: El Esqueleto Racional</title>
+    <!-- Mismos estilos de base que los sandbox del bloque 1 -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../ex1/styles.css">
+    <style>
+        /* Estilos específicos para el Reto del Esqueleto */
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #1d2500;
+            font-family: 'Outfit', sans-serif;
+            color: #fff;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* UI Overlays */
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .panel {
+            pointer-events: auto;
+            background: rgba(20, 25, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(200, 255, 1, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            position: absolute;
+        }
+
+        #instructions-panel {
+            top: 30px;
+            left: 30px;
+            width: 300px;
+        }
+
+        #instructions-panel h2 {
+            color: var(--ua-lime, #c8ff01);
+            margin-top: 0;
+            font-size: 1.4rem;
+        }
+
+        .step {
+            margin-bottom: 15px;
+            opacity: 0.4;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        .step-num {
+            background: rgba(255, 255, 255, 0.1);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step.active .step-num {
+            background: var(--ua-lime, #c8ff01);
+            color: #000;
+        }
+
+        #controls-panel {
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-action svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .btn-action:hover:not(:disabled) {
+            background: rgba(200, 255, 1, 0.2);
+            border-color: var(--ua-lime, #c8ff01);
+            color: var(--ua-lime, #c8ff01);
+        }
+
+        .btn-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Concept Toast (Modal) */
+        #concept-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        #concept-modal.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border-left: 5px solid var(--ua-lime, #c8ff01);
+            padding: 40px;
+            max-width: 500px;
+            border-radius: 10px;
+            transform: translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #concept-modal.visible .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-title {
+            color: var(--ua-lime, #c8ff01);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            font-weight: 900;
+        }
+
+        .modal-body {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #ddd;
+            margin-bottom: 25px;
+        }
+
+        .btn-continue {
+            background: var(--ua-lime, #c8ff01);
+            color: #000;
+            border: none;
+            padding: 10px 25px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .btn-continue:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(200, 255, 1, 0.4);
+        }
+
+        #warning-toast {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50px);
+            background: #ff3333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            box-shadow: 0 5px 15px rgba(255, 51, 51, 0.4);
+        }
+
+        #warning-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* ── Tutor Bubble ── */
+        #tutor-bubble {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            max-width: 340px;
+            padding: 16px 20px;
+            background: rgba(12, 12, 12, 0.95);
+            border-left: 4px solid var(--ua-lime, #c8ff01);
+            border-radius: 14px;
+            backdrop-filter: blur(12px);
+            z-index: 50;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(200, 255, 1, 0.15);
+        }
+
+        #tutor-bubble.pulse {
+            animation: tutorPulse 0.5s ease;
+        }
+
+        @keyframes tutorPulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            }
+
+            50% {
+                transform: scale(1.03);
+                box-shadow: 0 8px 32px rgba(200, 255, 1, 0.2);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            }
+        }
+
+        .tutor-avatar {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .tutor-content {
+            flex: 1;
+        }
+
+        .tutor-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--ua-lime, #c8ff01);
+            margin-bottom: 4px;
+        }
+
+        .tutor-text {
+            font-size: 0.88rem;
+            color: #ddd;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="canvas-container"></div>
+    <div id="warning-toast">¡Estructura inestable! Añade arriostramiento.</div>
+
+    <div id="ui-layer">
+        <div id="instructions-panel" class="panel">
+            <h2>El Esqueleto Racional</h2>
+
+            <div class="step active" id="step0">
+                <div class="step-num">1</div>
+                <div>
+                    <strong>Plantar Columnas</strong>
+                    <p style="font-size: 0.85rem; margin: 5px 0 0; color: #ccc;">Haz clic en las intersecciones de la
+                        malla para levantar 4 columnas.</p>
+                </div>
+            </div>
+
+            <div class="step" id="step1">
+                <div class="step-num">2</div>
+                <div>
+                    <strong>Cerrar Marco (Vigas)</strong>
+                    <p style="font-size: 0.85rem; margin: 5px 0 0; color: #ccc;">Usa el botón inferior para articular un
+                        marco rígido superior.</p>
+                </div>
+            </div>
+
+            <div class="step" id="step2">
+                <div class="step-num">3</div>
+                <div>
+                    <strong>Simular Empuje Lateral</strong>
+                    <p style="font-size: 0.85rem; margin: 5px 0 0; color: #ccc;">Envía fuerzas de viento y observa la
+                        deformación.</p>
+                </div>
+            </div>
+
+            <div class="step" id="step3">
+                <div class="step-num">4</div>
+                <div>
+                    <strong>Añadir Arriostramiento</strong>
+                    <p style="font-size: 0.85rem; margin: 5px 0 0; color: #ccc;">Coloca un muro de corte para
+                        estabilizar la estructura permanentemente.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="controls-panel" class="panel">
+            <button id="btn-vigas" class="btn-action" disabled>
+                <svg viewBox="0 0 24 24">
+                    <path d="M21,19H3V5H5V17H21V19Z" />
+                </svg>
+                Cerrar Marco
+            </button>
+            <button id="btn-viento" class="btn-action" disabled>
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M2.28,15.7A1.5,1.5 0 0,0 2.85,17.72A1.5,1.5 0 0,0 4.88,17.15L9,15L4.88,12.85A1.5,1.5 0 0,0 2.85,12.28A1.5,1.5 0 0,0 2.28,14.3L4,15L2.28,15.7M21.72,15.7L20,15L21.72,14.3A1.5,1.5 0 0,0 21.15,12.28A1.5,1.5 0 0,0 19.12,12.85L15,15L19.12,17.15A1.5,1.5 0 0,0 21.15,17.72A1.5,1.5 0 0,0 21.72,15.7M12.85,4.88A1.5,1.5 0 0,0 12.28,2.85A1.5,1.5 0 0,0 10.26,2.28L9.56,4L8.86,2.28A1.5,1.5 0 0,0 6.84,2.85A1.5,1.5 0 0,0 6.27,4.88L8.41,9H10.71L12.85,4.88Z" />
+                </svg>
+                Simular Viento
+            </button>
+            <button id="btn-muro" class="btn-action" disabled>
+                <svg viewBox="0 0 24 24">
+                    <path d="M3,3H21V21H3V3M5,5V19H19V5H5Z" />
+                </svg>
+                Añadir Muro (Plano)
+            </button>
+        </div>
+    </div>
+
+    <!-- Tutor Bubble -->
+    <div id="tutor-bubble">
+        <div class="tutor-avatar">👩‍🏫</div>
+        <div class="tutor-content">
+            <div class="tutor-label">Tutor</div>
+            <div class="tutor-text" id="tutorText">Bienvenido. Haz clic en las <strong>intersecciones de la
+                    malla</strong> para plantar 4 columnas y formar tu primer pórtico.</div>
+        </div>
+    </div>
+
+    <!-- Modal de Conceptos -->
+    <div id="concept-modal">
+        <div class="modal-content">
+            <div class="modal-title" id="modal-title">Concepto</div>
+            <div class="modal-body" id="modal-body">Descripción del concepto.</div>
+            <button class="btn-continue" onclick="closeModal()">Entendido</button>
+        </div>
+    </div>
+
+    <!-- Completion Modal -->
+    <div id="completion-modal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:500; align-items:center; justify-content:center;">
+        <div
+            style="background:#1a1a1a; border-left:5px solid #C8FF01; border-radius:16px; padding:40px; max-width:500px; width:90%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.8);">
+            <div style="font-size:3rem; margin-bottom:15px;">🏗️</div>
+            <h2
+                style="color:#C8FF01; font-size:1.5rem; font-weight:900; margin-bottom:15px; font-family:'Montserrat',sans-serif;">
+                ¡Simulación Completada!</h2>
+            <p
+                style="color:#ddd; font-size:1rem; line-height:1.7; margin-bottom:25px; font-family:'Montserrat',sans-serif;">
+                Has construido un sistema aporticado y lo has estabilizado con un muro de corte. Puedes seguir
+                experimentando o volver al tablero de bloques.</p>
+            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                <button onclick="document.getElementById('completion-modal').style.display='none'"
+                    style="background:transparent; color:#fff; border:1px solid #555; padding:12px 24px; font-weight:bold; border-radius:6px; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:0.95rem;">Seguir
+                    Explorando</button>
+                <button onclick="window.parent.postMessage({type:'exercise-complete',exercise:'ex4_esqueleto'},'*')"
+                    style="background:#C8FF01; color:#000; border:none; padding:12px 24px; font-weight:bold; border-radius:6px; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:0.95rem;">Volver
+                    al Tablero</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

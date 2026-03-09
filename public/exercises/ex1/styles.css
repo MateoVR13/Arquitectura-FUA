@@ -1,0 +1,442 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+    --ua-lime: #C8FF01;
+    --bg-color: #1d2500;
+    --bg-glass: rgba(20, 20, 20, 0.4);
+    --border-glass: #2a2a2a;
+    --text-color: #ffffff;
+    --text-muted: #a0a0a0;
+    --font-primary: 'Montserrat', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-primary);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-image:
+        radial-gradient(circle at 15% 50%, rgba(200, 255, 1, 0.05), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(0, 164, 181, 0.05), transparent 25%);
+}
+
+.header {
+    padding: 20px 40px;
+    background: var(--bg-glass);
+    border-bottom: 1px solid var(--border-glass);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.title {
+    color: var(--ua-lime);
+    font-weight: 800;
+    font-size: 1.2rem;
+}
+
+.view-toggle {
+    display: flex;
+    background: #111;
+    border-radius: 8px;
+    border: 1px solid #333;
+    overflow: hidden;
+}
+
+.view-toggle .icon-btn {
+    border-radius: 0;
+    border: none;
+    width: 90px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.app-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 350px;
+    background: #111;
+    border-right: 1px solid var(--border-glass);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    z-index: 20;
+}
+
+.progress-container {
+    height: 6px;
+    background: #222;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--ua-lime);
+    width: 20%;
+    transition: width 0.3s ease;
+}
+
+.step-info {
+    margin-bottom: 30px;
+}
+
+.step-info h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.step-info p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.tools-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Grid Configuration Controls */
+.grid-control {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.grid-control label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.slider-input {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: #333;
+    border-radius: 3px;
+    outline: none;
+}
+
+.slider-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--ua-lime);
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(200, 255, 1, 0.4);
+}
+
+.slider-val {
+    font-size: 0.8rem;
+    color: var(--ua-lime);
+    font-weight: bold;
+    text-align: right;
+}
+
+.btn {
+    background: transparent;
+    color: #fff;
+    border: 1px solid var(--border-glass);
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.btn-primary {
+    background: var(--ua-lime);
+    color: #000;
+    border: none;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #d4ff33;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.inventory {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-glass);
+    display: none;
+}
+
+.inventory.active {
+    display: block;
+}
+
+.inventory-items {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.inv-item {
+    background: #222;
+    border: 1px solid #333;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    cursor: grab;
+    font-size: 0.8rem;
+    transition: background 0.2s;
+}
+
+.inv-item:hover {
+    background: #333;
+}
+
+.canvas-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1a1a1a;
+    position: relative;
+}
+
+.toolbar {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 30;
+}
+
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: #111;
+    border: 1px solid #333;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.2s;
+}
+
+.icon-btn:hover {
+    background: #222;
+}
+
+.icon-btn.active {
+    background: var(--ua-lime);
+    color: #000;
+    border-color: var(--ua-lime);
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.nav-buttons .btn {
+    flex: 1;
+}
+
+/* ── Concept Modal (Block 2 style) ── */
+#concept-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+#concept-modal.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-content {
+    background: #1a1a1a;
+    border-left: 5px solid var(--ua-lime);
+    padding: 40px;
+    max-width: 550px;
+    border-radius: 12px;
+    transform: translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+}
+
+#concept-modal.visible .modal-content {
+    transform: translateY(0);
+}
+
+.modal-title {
+    color: var(--ua-lime);
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    font-weight: 900;
+}
+
+.modal-body {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #ddd;
+    margin-bottom: 25px;
+}
+
+.btn-continue {
+    background: var(--ua-lime);
+    color: #000;
+    border: none;
+    padding: 12px 28px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.btn-continue:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(200, 255, 1, 0.4);
+}
+
+/* ── Final Modal ── */
+.final-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: var(--bg-glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--ua-lime);
+    border-radius: 16px;
+    padding: 30px;
+    width: 90%;
+    max-width: 600px;
+    z-index: 100;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0;
+    pointer-events: none;
+    text-align: center;
+}
+
+.final-modal.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* ── Tutor Bubble ── */
+#tutor-bubble {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    max-width: 340px;
+    padding: 16px 20px;
+    background: rgba(12, 12, 12, 0.95);
+    border-left: 4px solid var(--ua-lime);
+    border-radius: 14px;
+    backdrop-filter: blur(12px);
+    z-index: 50;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(200, 255, 1, 0.15);
+}
+
+#tutor-bubble.pulse {
+    animation: tutorPulse 0.5s ease;
+}
+
+@keyframes tutorPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    50% {
+        transform: scale(1.03);
+        box-shadow: 0 8px 32px rgba(200, 255, 1, 0.2);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    }
+}
+
+.tutor-avatar {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.tutor-content {
+    flex: 1;
+}
+
+.tutor-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--ua-lime);
+    margin-bottom: 4px;
+}
+
+.tutor-text {
+    font-size: 0.88rem;
+    color: #ddd;
+    line-height: 1.5;
+}

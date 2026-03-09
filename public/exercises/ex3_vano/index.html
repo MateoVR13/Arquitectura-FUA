@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 1: El Reto del Vano</title>
+    <!-- Mismos estilos de base que los sandbox del bloque 1 -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../ex1/styles.css">
+    <style>
+        /* Estilos específicos para el Reto del Vano */
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #1d2500;
+            font-family: 'Outfit', sans-serif;
+            color: #fff;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* UI Overlays */
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .panel {
+            pointer-events: auto;
+            background: rgba(20, 25, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(200, 255, 1, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            position: absolute;
+        }
+
+        #instructions-panel {
+            top: 30px;
+            left: 30px;
+            width: 300px;
+        }
+
+        #instructions-panel h2 {
+            color: var(--ua-lime, #c8ff01);
+            margin-top: 0;
+            font-size: 1.4rem;
+        }
+
+        .step {
+            margin-bottom: 15px;
+            opacity: 0.4;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        .step-num {
+            background: rgba(255, 255, 255, 0.1);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step.active .step-num {
+            background: var(--ua-lime, #c8ff01);
+            color: #000;
+        }
+
+        #controls-panel {
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-action:hover:not(:disabled) {
+            background: rgba(200, 255, 1, 0.2);
+            border-color: var(--ua-lime, #c8ff01);
+            color: var(--ua-lime, #c8ff01);
+        }
+
+        .btn-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-group label {
+            font-size: 0.8rem;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        select,
+        input[type="range"] {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        select:hover,
+        select:focus {
+            border-color: var(--ua-lime, #c8ff01);
+        }
+
+        select option {
+            background: #1a1a1a;
+            color: white;
+            padding: 8px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            padding: 0;
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--ua-lime, #c8ff01);
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(200, 255, 1, 0.4);
+        }
+
+        /* Concept Toast (Modal) */
+        #concept-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        #concept-modal.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border-left: 5px solid var(--ua-lime, #c8ff01);
+            padding: 40px;
+            max-width: 500px;
+            border-radius: 10px;
+            transform: translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #concept-modal.visible .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-title {
+            color: var(--ua-lime, #c8ff01);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            font-weight: 900;
+        }
+
+        .modal-body {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #ddd;
+            margin-bottom: 25px;
+        }
+
+        .btn-continue {
+            background: var(--ua-lime, #c8ff01);
+            color: #000;
+            border: none;
+            padding: 10px 25px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .btn-continue:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(200, 255, 1, 0.4);
+        }
+
+        /* ── Tutor Bubble ── */
+        #tutor-bubble {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            max-width: 340px;
+            padding: 16px 20px;
+            background: rgba(12, 12, 12, 0.95);
+            border-left: 4px solid var(--ua-lime, #c8ff01);
+            border-radius: 14px;
+            backdrop-filter: blur(12px);
+            z-index: 50;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(200, 255, 1, 0.15);
+        }
+
+        #tutor-bubble.pulse {
+            animation: tutorPulse 0.5s ease;
+        }
+
+        @keyframes tutorPulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            }
+
+            50% {
+                transform: scale(1.03);
+                box-shadow: 0 8px 32px rgba(200, 255, 1, 0.2);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            }
+        }
+
+        .tutor-avatar {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .tutor-content {
+            flex: 1;
+        }
+
+        .tutor-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--ua-lime, #c8ff01);
+            margin-bottom: 4px;
+        }
+
+        .tutor-text {
+            font-size: 0.88rem;
+            color: #ddd;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="canvas-container"></div>
+
+    <div id="ui-layer">
+        <div id="instructions-panel" class="panel">
+            <h2>El Reto del Vano</h2>
+
+            <div class="step active" id="step0">
+                <div class="step-num">1</div>
+                <div>
+                    <strong>Definir Apoyos</strong>
+                    <p style="font-size: 0.85rem; margin: 5px 0 0; color: #ccc;">Haz clic en 2 puntos del suelo para
+                        colocar muros/columnas.</p>
+                </div>
+            </div>
+
+            <div class="step" id="step1">
+                <div class="step-num">2</div>
+                <div>
+                    <strong>Trazar Viga (Línea)</strong>
+                    <p style="font-size: 0.85rem; margin: 5px 0 0; color: #ccc;">Haz clic en el botón inferior para
+                        dibujar la viga.</p>
+                </div>
+            </div>
+
+            <div class="step" id="step2">
+                <div class="step-num">3</div>
+                <div>
+                    <strong>Aumentar Distancia</strong>
+                    <p style="font-size: 0.85rem; margin: 5px 0 0; color: #ccc;">Arrastra uno de los apoyos para
+                        alejarlo y observar la flexión.</p>
+                </div>
+            </div>
+
+            <div class="step" id="step3">
+                <div class="step-num">4</div>
+                <div>
+                    <strong>Ajustar Material y Canto</strong>
+                    <p style="font-size: 0.85rem; margin: 5px 0 0; color: #ccc;">Usa los controles inferiores para
+                        contrarrestar la deformación.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="controls-panel" class="panel">
+            <button id="btn-trazar" class="btn-action" style="display:none;" disabled>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                    <path d="M21,19H3V5H5V17H21V19Z" />
+                </svg>
+                Trazar Viga
+            </button>
+            <div class="control-group config-control" style="display:none;">
+                <label>Material</label>
+                <select id="material-select" disabled>
+                    <option value="madera">Madera</option>
+                    <option value="concreto">Concreto</option>
+                    <option value="acero">Acero</option>
+                </select>
+            </div>
+            <div class="control-group config-control" style="display:none;">
+                <label>Canto (Altura de Viga)</label>
+                <input type="range" id="canto-slider" min="0.2" max="2.0" step="0.1" value="0.2" disabled>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tutor Bubble -->
+    <div id="tutor-bubble">
+        <div class="tutor-avatar">👩‍🏫</div>
+        <div class="tutor-content">
+            <div class="tutor-label">Tutor</div>
+            <div class="tutor-text" id="tutorText">Bienvenido. Haz clic en <strong>2 puntos del suelo</strong> para
+                colocar los apoyos verticales (muros o columnas).</div>
+        </div>
+    </div>
+
+    <!-- Modal de Conceptos -->
+    <div id="concept-modal">
+        <div class="modal-content">
+            <div class="modal-title" id="modal-title">Concepto</div>
+            <div class="modal-body" id="modal-body">Descripción del concepto.</div>
+            <button class="btn-continue" onclick="closeModal()">Entendido</button>
+        </div>
+    </div>
+
+    <!-- Completion Modal -->
+    <div id="completion-modal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:500; align-items:center; justify-content:center;">
+        <div
+            style="background:#1a1a1a; border-left:5px solid #C8FF01; border-radius:16px; padding:40px; max-width:500px; width:90%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.8);">
+            <div style="font-size:3rem; margin-bottom:15px;">🎉</div>
+            <h2
+                style="color:#C8FF01; font-size:1.5rem; font-weight:900; margin-bottom:15px; font-family:'Montserrat',sans-serif;">
+                ¡Simulación Completada!</h2>
+            <p
+                style="color:#ddd; font-size:1rem; line-height:1.7; margin-bottom:25px; font-family:'Montserrat',sans-serif;">
+                Has dominado los conceptos de apoyo, vano y flexión. Puedes seguir experimentando con la simulación o
+                volver al tablero de bloques.</p>
+            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                <button onclick="document.getElementById('completion-modal').style.display='none'"
+                    style="background:transparent; color:#fff; border:1px solid #555; padding:12px 24px; font-weight:bold; border-radius:6px; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:0.95rem;">Seguir
+                    Explorando</button>
+                <button onclick="window.parent.postMessage({type:'exercise-complete',exercise:'ex3_vano'},'*')"
+                    style="background:#C8FF01; color:#000; border:none; padding:12px 24px; font-weight:bold; border-radius:6px; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:0.95rem;">Volver
+                    al Tablero</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

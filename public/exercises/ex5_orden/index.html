@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 1: El Paso al Orden</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #0a0a0a;
+            font-family: 'Outfit', sans-serif;
+            color: #fff;
+        }
+
+        /* ── Layout ── */
+        #app {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        #sidebar {
+            width: 340px;
+            background: rgba(0, 0, 0, 0.5);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        #canvas-area {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* ── Header ── */
+        .ex-title {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #FFD700;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .ex-subtitle {
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        /* ── Steps ── */
+        .step-card {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-card.locked {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .step-card.active {
+            border-color: #FFD700;
+            background: rgba(255, 215, 0, 0.08);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+        }
+
+        .step-card.done {
+            border-color: rgba(80, 200, 120, 0.3);
+            background: rgba(80, 200, 120, 0.05);
+        }
+
+        .step-card.done::after {
+            content: '✓';
+            position: absolute;
+            top: 12px;
+            right: 15px;
+            color: #50c878;
+            font-weight: 900;
+            font-size: 1.2rem;
+        }
+
+        .step-num {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #FFD700;
+            margin-bottom: 5px;
+        }
+
+        .step-card.locked .step-num {
+            color: #555;
+        }
+
+        .step-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .step-desc {
+            font-size: 0.8rem;
+            color: #888;
+            line-height: 1.4;
+        }
+
+        /* ── Controls Panel ── */
+        #controls {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 10px 18px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 215, 0, 0.05);
+            color: #FFD700;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            background: rgba(255, 215, 0, 0.15);
+        }
+
+        .btn-action.selected {
+            background: #FFD700;
+            color: #000;
+            border-color: #FFD700;
+        }
+
+        .btn-action:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .btn-finish {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #FFD700;
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: filter 0.2s;
+            display: none;
+        }
+
+        .btn-finish:hover {
+            filter: brightness(1.1);
+        }
+
+        /* Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #FFD700;
+            cursor: pointer;
+            border: 2px solid #000;
+        }
+
+        .slider-value {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #FFD700;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        /* ── Modal ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-box {
+            background: #111;
+            border-left: 5px solid #FFD700;
+            border-radius: 14px;
+            max-width: 520px;
+            width: 90%;
+            padding: 35px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.show .modal-box {
+            transform: translateY(0);
+        }
+
+        .modal-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        .modal-title {
+            color: #FFD700;
+            font-size: 1.4rem;
+            font-weight: 900;
+            margin-bottom: 12px;
+        }
+
+        .modal-body {
+            color: #ccc;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        .modal-btn {
+            background: #FFD700;
+            color: #000;
+            border: none;
+            padding: 12px 28px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            width: 100%;
+            transition: filter 0.2s;
+        }
+
+        .modal-btn:hover {
+            filter: brightness(1.15);
+        }
+
+        /* ── Canvas Info Overlay ── */
+        #info-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            color: #aaa;
+            text-align: center;
+        }
+
+        /* ── Tutor Bubble ── */
+        #tutor-bubble {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            max-width: 340px;
+            padding: 16px 20px;
+            background: rgba(12, 12, 12, 0.95);
+            border-left: 4px solid #FFD700;
+            border-radius: 14px;
+            backdrop-filter: blur(12px);
+            z-index: 50;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+        }
+
+        #tutor-bubble.pulse {
+            animation: tutorPulse 0.5s ease;
+        }
+
+        @keyframes tutorPulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            }
+
+            50% {
+                transform: scale(1.03);
+                box-shadow: 0 8px 32px rgba(255, 215, 0, 0.2);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            }
+        }
+
+        .tutor-avatar {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .tutor-content {
+            flex: 1;
+        }
+
+        .tutor-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #FFD700;
+            margin-bottom: 4px;
+        }
+
+        .tutor-text {
+            font-size: 0.88rem;
+            color: #ddd;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="sidebar">
+            <div class="ex-title">🏛️ EL PASO AL ORDEN</div>
+            <div class="ex-subtitle">Transforma una estructura primitiva de madera en un templo que represente el orden
+                y la proporción clásica.</div>
+
+            <div class="step-card active" data-step="1" onclick="activateStep(1)">
+                <div class="step-num">Paso 1</div>
+                <div class="step-title">Sustituir Material</div>
+                <div class="step-desc">Cambia los troncos de madera por bloques de piedra (mármol).</div>
+            </div>
+            <div class="step-card locked" data-step="2" onclick="activateStep(2)">
+                <div class="step-num">Paso 2</div>
+                <div class="step-title">Aplicar Proporción</div>
+                <div class="step-desc">Ajusta la relación altura/diámetro de las columnas según el canon clásico.</div>
+            </div>
+            <div class="step-card locked" data-step="3" onclick="activateStep(3)">
+                <div class="step-num">Paso 3</div>
+                <div class="step-title">Elegir Orden</div>
+                <div class="step-desc">Selecciona el capitel: Dórico, Jónico o Corintio.</div>
+            </div>
+            <div class="step-card locked" data-step="4" onclick="activateStep(4)">
+                <div class="step-num">Paso 4</div>
+                <div class="step-title">Establecer Simetría</div>
+                <div class="step-desc">Duplica elementos a ambos lados del eje central.</div>
+            </div>
+
+            <div id="controls"></div>
+            <button class="btn-finish" id="btnFinish" onclick="finishExercise()">✓ Completar Ejercicio</button>
+        </div>
+
+        <div id="canvas-area">
+            <canvas id="canvas"></canvas>
+            <div id="info-overlay">Vista frontal · Haz clic en los pasos de la izquierda para transformar la estructura
+            </div>
+        </div>
+    </div>
+
+    <!-- Tutor Bubble -->
+    <div id="tutor-bubble">
+        <div class="tutor-avatar">👩‍🏫</div>
+        <div class="tutor-content">
+            <div class="tutor-label">Tutor</div>
+            <div class="tutor-text" id="tutorText">Bienvenido. Lee el concepto teórico y luego haz clic en el botón
+                <strong>"Piedra"</strong> en el panel inferior izquierdo para transformar el material.
+            </div>
+        </div>
+    </div>
+
+    <!-- Concept Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-box">
+            <div class="modal-icon" id="modalIcon"></div>
+            <div class="modal-title" id="modalTitle"></div>
+            <div class="modal-body" id="modalBody"></div>
+            <button class="modal-btn" onclick="closeModal()">Entendido</button>
+        </div>
+    </div>
+
+    <!-- Completion Modal -->
+    <div id="completion-modal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:500; align-items:center; justify-content:center;">
+        <div
+            style="background:#1a1a1a; border-left:5px solid #FFD700; border-radius:16px; padding:40px; max-width:500px; width:90%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.8);">
+            <div style="font-size:3rem; margin-bottom:15px;">🏛️</div>
+            <h2
+                style="color:#FFD700; font-size:1.5rem; font-weight:900; margin-bottom:15px; font-family:'Outfit',sans-serif;">
+                ¡Simulación Completada!</h2>
+            <p
+                style="color:#ddd; font-size:1rem; line-height:1.7; margin-bottom:25px; font-family:'Outfit',sans-serif;">
+                Has transformado una cabaña primitiva en un templo clásico, dominando los conceptos de materialidad,
+                proporción, orden y simetría.</p>
+            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                <button onclick="document.getElementById('completion-modal').style.display='none'"
+                    style="background:transparent; color:#fff; border:1px solid #555; padding:12px 24px; font-weight:bold; border-radius:6px; cursor:pointer; font-family:'Outfit',sans-serif; font-size:0.95rem;">Seguir
+                    Explorando</button>
+                <button onclick="window.parent.postMessage({type:'exercise-complete',exercise:'ex5_orden'},'*')"
+                    style="background:#FFD700; color:#000; border:none; padding:12px 24px; font-weight:bold; border-radius:6px; cursor:pointer; font-family:'Outfit',sans-serif; font-size:0.95rem;">Volver
+                    al Tablero</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════
+        //  STATE
+        // ═══════════════════════════════
+        const state = {
+            currentStep: 1,
+            completedSteps: new Set(),
+            material: 'wood',       // 'wood' | 'stone'
+            proportion: 6,          // column height / diameter ratio
+            order: null,            // 'doric' | 'ionic' | 'corinthian'
+            symmetric: false,
+            animProgress: 0         // for material transition
+        };
+
+        const CONCEPTS = {
+            1: {
+                icon: '🪵',
+                title: 'De la Cabaña al Templo',
+                body: 'La arquitectura nace como refugio (madera), pero busca la eternidad a través de la piedra. Este proceso de <strong>petrificación</strong> es lo que dio origen a los detalles de los órdenes clásicos. Las estrías de las columnas dóricas, por ejemplo, recuerdan la textura de los troncos de madera originales.'
+            },
+            2: {
+                icon: '📐',
+                title: 'El Canon y la Proporción',
+                body: 'En la antigüedad, la belleza era matemática. La relación entre las partes aseguraba que el edificio reflejara la <strong>armonía del cosmos</strong>. No se diseña al azar, se diseña bajo un sistema de medidas humanas. El diámetro de la columna es la unidad base: todo se mide en función de él.'
+            },
+            3: {
+                icon: '🏛️',
+                title: 'Los Órdenes Clásicos',
+                body: 'No son decoración, son <strong>sistemas de lenguaje</strong>. El <em>Dórico</em> representa la fuerza masculina y la austeridad. El <em>Jónico</em>, la elegancia femenina con sus volutas. El <em>Corintio</em>, la exuberancia de la naturaleza con hojas de acanto. Cada uno define el carácter del edificio.'
+            },
+            4: {
+                icon: '🪞',
+                title: 'Simetría y Poder',
+                body: 'La simetría absoluta proyecta <strong>estabilidad y control</strong>. Al usar un eje central dominante (Pauta), el edificio se convierte en un objeto monumental que organiza el paisaje a su alrededor. La simetría fue sinónimo de civilización en el mundo clásico.'
+            }
+        };
+
+        // ═══════════════════════════════
+        //  CANVAS
+        // ═══════════════════════════════
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let W, H;
+
+        function resize() {
+            const area = document.getElementById('canvas-area');
+            W = canvas.width = area.clientWidth;
+            H = canvas.height = area.clientHeight;
+            draw();
+        }
+        window.addEventListener('resize', resize);
+
+        // ── Drawing ──
+        function draw() {
+            ctx.clearRect(0, 0, W, H);
+            drawGround();
+            drawTemple();
+        }
+
+        function drawGround() {
+            const gy = H * 0.78;
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(0, gy, W, H - gy);
+            // Steps/platform
+            const cx = W / 2;
+            const baseW = state.symmetric ? 520 : 400;
+            for (let i = 0; i < 3; i++) {
+                const sw = baseW + i * 40;
+                const sy = gy + i * 10;
+                ctx.fillStyle = state.material === 'stone' ? `hsl(40, 10%, ${28 - i * 3}%)` : `hsl(30, 40%, ${22 - i * 3}%)`;
+                ctx.fillRect(cx - sw / 2, sy, sw, 12);
+            }
+        }
+
+        function drawTemple() {
+            const cx = W / 2;
+            const groundY = H * 0.78;
+            const colDiameter = 28;
+            const colHeight = colDiameter * state.proportion;
+            const colTop = groundY - colHeight;
+            const numCols = state.symmetric ? 6 : 3;
+            const spacing = state.symmetric ? 80 : 90;
+            const startX = cx - ((numCols - 1) * spacing) / 2;
+
+            // Colors
+            const isStone = state.material === 'stone';
+            const colColor = isStone ? '#d4c8a8' : '#8B6914';
+            const colShadow = isStone ? '#b5a88a' : '#6b4f10';
+            const entabColor = isStone ? '#c8bca0' : '#7a5c18';
+
+            // Columns
+            for (let i = 0; i < numCols; i++) {
+                const x = startX + i * spacing;
+                drawColumn(x, groundY, colHeight, colDiameter, colColor, colShadow, isStone);
+            }
+
+            // Entablature
+            const entabW = (numCols - 1) * spacing + colDiameter + 40;
+            const entabH = 25;
+            ctx.fillStyle = entabColor;
+            ctx.fillRect(cx - entabW / 2, colTop - entabH, entabW, entabH);
+            // Frieze
+            ctx.fillStyle = isStone ? '#bab0a0' : '#6b4f10';
+            ctx.fillRect(cx - entabW / 2, colTop - entabH - 18, entabW, 18);
+            if (isStone && state.order === 'doric') {
+                // Triglyphs
+                const triW = 14;
+                for (let tx = cx - entabW / 2 + 15; tx < cx + entabW / 2 - 15; tx += 35) {
+                    ctx.fillStyle = '#a09080';
+                    ctx.fillRect(tx, colTop - entabH - 16, triW, 14);
+                    ctx.strokeStyle = '#888';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(tx + 4, colTop - entabH - 16);
+                    ctx.lineTo(tx + 4, colTop - entabH - 2);
+                    ctx.moveTo(tx + 10, colTop - entabH - 16);
+                    ctx.lineTo(tx + 10, colTop - entabH - 2);
+                    ctx.stroke();
+                }
+            }
+
+            // Pediment (triangle)
+            const pedH = 60;
+            const pedBase = entabW;
+            ctx.fillStyle = isStone ? '#c0b498' : '#7a5c18';
+            ctx.beginPath();
+            ctx.moveTo(cx - pedBase / 2, colTop - entabH - 18);
+            ctx.lineTo(cx, colTop - entabH - 18 - pedH);
+            ctx.lineTo(cx + pedBase / 2, colTop - entabH - 18);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = isStone ? '#a09070' : '#5a4010';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Symmetry axis
+            if (state.symmetric) {
+                ctx.setLineDash([8, 6]);
+                ctx.strokeStyle = 'rgba(255,215,0,0.25)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(cx, colTop - entabH - pedH - 20);
+                ctx.lineTo(cx, groundY + 30);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+        }
+
+        function drawColumn(x, baseY, height, diameter, color, shadowColor, isStone) {
+            const top = baseY - height;
+            // Column shaft
+            const taperTop = diameter * 0.8; // entasis
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x - diameter / 2, baseY);
+            ctx.lineTo(x - taperTop / 2, top + 30);
+            ctx.lineTo(x + taperTop / 2, top + 30);
+            ctx.lineTo(x + diameter / 2, baseY);
+            ctx.closePath();
+            ctx.fill();
+
+            // Flutes (for stone)
+            if (isStone) {
+                ctx.strokeStyle = shadowColor;
+                ctx.lineWidth = 0.8;
+                const numFlutes = 6;
+                for (let f = 1; f < numFlutes; f++) {
+                    const ratio = f / numFlutes;
+                    const bx = x - diameter / 2 + diameter * ratio;
+                    const tx = x - taperTop / 2 + taperTop * ratio;
+                    ctx.beginPath();
+                    ctx.moveTo(bx, baseY);
+                    ctx.lineTo(tx, top + 30);
+                    ctx.stroke();
+                }
+            } else {
+                // Wood grain lines
+                ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+                ctx.lineWidth = 1;
+                for (let g = 0; g < 3; g++) {
+                    const gx = x - 5 + g * 5;
+                    ctx.beginPath();
+                    ctx.moveTo(gx, baseY);
+                    ctx.lineTo(gx - 1, top + 35);
+                    ctx.stroke();
+                }
+            }
+
+            // Capital
+            drawCapital(x, top + 30, diameter, isStone);
+
+            // Column base
+            ctx.fillStyle = isStone ? '#bab0a0' : '#7a5c18';
+            ctx.fillRect(x - diameter / 2 - 4, baseY - 8, diameter + 8, 8);
+        }
+
+        function drawCapital(x, y, diameter, isStone) {
+            const order = state.order || 'simple';
+            const w = diameter + 12;
+
+            if (order === 'doric' && isStone) {
+                // Simple slab (abacus + echinus)
+                ctx.fillStyle = '#c8bca8';
+                ctx.fillRect(x - w / 2, y - 12, w, 12);
+                ctx.fillStyle = '#bab0a0';
+                // Echinus curve
+                ctx.beginPath();
+                ctx.moveTo(x - diameter / 2 * 0.8, y);
+                ctx.quadraticCurveTo(x - w / 2 - 2, y - 4, x - w / 2, y - 12);
+                ctx.lineTo(x + w / 2, y - 12);
+                ctx.quadraticCurveTo(x + w / 2 + 2, y - 4, x + diameter / 2 * 0.8, y);
+                ctx.closePath();
+                ctx.fill();
+            } else if (order === 'ionic' && isStone) {
+                // Volutes
+                ctx.fillStyle = '#c8bca8';
+                ctx.fillRect(x - w / 2, y - 10, w, 10);
+                // Left volute
+                ctx.beginPath();
+                ctx.arc(x - w / 2 - 4, y - 5, 8, 0, Math.PI * 2);
+                ctx.fillStyle = '#c8bca8';
+                ctx.fill();
+                ctx.strokeStyle = '#a09070';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.arc(x - w / 2 - 4, y - 5, 8, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(x - w / 2 - 4, y - 5, 4, 0, Math.PI * 2);
+                ctx.stroke();
+                // Right volute
+                ctx.beginPath();
+                ctx.arc(x + w / 2 + 4, y - 5, 8, 0, Math.PI * 2);
+                ctx.fillStyle = '#c8bca8';
+                ctx.fill();
+                ctx.strokeStyle = '#a09070';
+                ctx.beginPath();
+                ctx.arc(x + w / 2 + 4, y - 5, 8, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(x + w / 2 + 4, y - 5, 4, 0, Math.PI * 2);
+                ctx.stroke();
+            } else if (order === 'corinthian' && isStone) {
+                // Ornate with leaves
+                ctx.fillStyle = '#c8bca8';
+                ctx.fillRect(x - w / 2, y - 18, w, 18);
+                // Leaf shapes
+                ctx.fillStyle = '#b0a890';
+                for (let l = -2; l <= 2; l++) {
+                    const lx = x + l * 8;
+                    ctx.beginPath();
+                    ctx.moveTo(lx, y);
+                    ctx.quadraticCurveTo(lx - 5, y - 12, lx, y - 18);
+                    ctx.quadraticCurveTo(lx + 5, y - 12, lx, y);
+                    ctx.fill();
+                }
+                // Corner scrolls
+                ctx.strokeStyle = '#a09070';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(x - w / 2, y - 16, 4, -0.5, 1.5);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(x + w / 2, y - 16, 4, 1.5, 3.5);
+                ctx.stroke();
+            } else {
+                // Simple wooden cross-beam or basic capital
+                ctx.fillStyle = isStone ? '#c0b498' : '#8B6914';
+                ctx.fillRect(x - w / 2, y - 8, w, 8);
+            }
+        }
+
+        // ═══════════════════════════════
+        //  TUTOR MESSAGES
+        // ═══════════════════════════════
+        const TUTOR = {
+            1: 'Lee el concepto teórico y luego haz clic en el botón <strong>"🪨 Piedra"</strong> en el panel inferior izquierdo para cambiar el material de madera a mármol.',
+            '1_done': '¡Excelente! El material ahora es piedra. Haz clic en <strong>"Paso 2: Aplicar Proporción"</strong> en la barra lateral para continuar.',
+            2: 'Mueve el <strong>deslizador de proporción</strong> para ajustar la relación altura/diámetro de las columnas. Prueba diferentes valores y luego haz clic en <strong>"Confirmar Proporción"</strong>.',
+            '2_done': '¡Bien! La proporción está definida. Ahora haz clic en <strong>"Paso 3: Elegir Orden"</strong> para seleccionar el tipo de capitel.',
+            3: 'Elige uno de los tres <strong>órdenes clásicos</strong>: Dórico (fuerza), Jónico (elegancia) o Corintio (exuberancia). Haz clic en el botón correspondiente.',
+            '3_done': '¡Perfecto! Has definido el lenguaje del templo. Haz clic en <strong>"Paso 4: Establecer Simetría"</strong> para el último paso.',
+            4: 'Haz clic en el botón <strong>"🪞 Aplicar Espejo"</strong> para duplicar las columnas a ambos lados del eje central y completar la composición simétrica.',
+            '4_done': '🎉 ¡Felicidades! Has completado la transformación del templo. Haz clic en <strong>"✓ Completar Ejercicio"</strong> para finalizar.',
+        };
+
+        function updateTutor() {
+            const step = state.currentStep;
+            const key = state.completedSteps.has(step) ? step + '_done' : step;
+            const msg = TUTOR[key] || TUTOR[step];
+            const el = document.getElementById('tutorText');
+            if (el && msg) {
+                el.innerHTML = msg;
+                // Pulse animation
+                const bubble = document.getElementById('tutor-bubble');
+                bubble.classList.remove('pulse');
+                void bubble.offsetWidth; // reflow
+                bubble.classList.add('pulse');
+            }
+        }
+
+        // ═══════════════════════════════
+        //  STEP LOGIC
+        // ═══════════════════════════════
+        function activateStep(step) {
+            if (step > 1 && !state.completedSteps.has(step - 1)) return;
+            state.currentStep = step;
+            updateUI();
+            showConcept(step);
+            updateTutor();
+        }
+
+        function completeStep(step) {
+            state.completedSteps.add(step);
+            updateUI();
+            draw();
+            updateTutor();
+        }
+
+        function updateUI() {
+            document.querySelectorAll('.step-card').forEach(card => {
+                const s = parseInt(card.dataset.step);
+                card.classList.remove('active', 'locked', 'done');
+                if (state.completedSteps.has(s)) {
+                    card.classList.add('done');
+                } else if (s === state.currentStep) {
+                    card.classList.add('active');
+                } else if (s > 1 && !state.completedSteps.has(s - 1)) {
+                    card.classList.add('locked');
+                }
+            });
+            renderControls();
+            // Show finish button
+            document.getElementById('btnFinish').style.display = state.completedSteps.size >= 4 ? 'block' : 'none';
+        }
+
+        function renderControls() {
+            const ctrl = document.getElementById('controls');
+            const step = state.currentStep;
+
+            if (state.completedSteps.has(step)) {
+                ctrl.innerHTML = '<p style="color:#50c878;font-size:0.85rem;text-align:center;">✓ Paso completado</p>';
+                return;
+            }
+
+            if (step === 1) {
+                ctrl.innerHTML = `
+                    <div class="control-group">
+                        <div class="control-label">Material</div>
+                        <div class="btn-row">
+                            <button class="btn-action ${state.material === 'wood' ? 'selected' : ''}" onclick="setMaterial('wood')">🪵 Madera</button>
+                            <button class="btn-action ${state.material === 'stone' ? 'selected' : ''}" onclick="setMaterial('stone')">🪨 Piedra</button>
+                        </div>
+                    </div>`;
+            } else if (step === 2) {
+                ctrl.innerHTML = `
+                    <div class="control-group">
+                        <div class="control-label">Proporción (Altura / Diámetro)</div>
+                        <input type="range" min="4" max="10" step="0.5" value="${state.proportion}" oninput="setProportion(this.value)">
+                        <div class="slider-value">${state.proportion}:1</div>
+                    </div>
+                    <div class="btn-row" style="margin-top:10px;">
+                        <button class="btn-action" onclick="completeStep(2)">Confirmar Proporción</button>
+                    </div>`;
+            } else if (step === 3) {
+                ctrl.innerHTML = `
+                    <div class="control-group">
+                        <div class="control-label">Orden del Capitel</div>
+                        <div class="btn-row">
+                            <button class="btn-action ${state.order === 'doric' ? 'selected' : ''}" onclick="setOrder('doric')">Dórico</button>
+                            <button class="btn-action ${state.order === 'ionic' ? 'selected' : ''}" onclick="setOrder('ionic')">Jónico</button>
+                            <button class="btn-action ${state.order === 'corinthian' ? 'selected' : ''}" onclick="setOrder('corinthian')">Corintio</button>
+                        </div>
+                    </div>`;
+            } else if (step === 4) {
+                ctrl.innerHTML = `
+                    <div class="control-group">
+                        <div class="control-label">Simetría</div>
+                        <div class="btn-row">
+                            <button class="btn-action" onclick="applySymmetry()">🪞 Aplicar Espejo</button>
+                        </div>
+                    </div>`;
+            }
+        }
+
+        // ── Actions ──
+        function setMaterial(mat) {
+            state.material = mat;
+            draw();
+            renderControls();
+            if (mat === 'stone') completeStep(1);
+        }
+
+        function setProportion(val) {
+            state.proportion = parseFloat(val);
+            document.querySelector('.slider-value').textContent = val + ':1';
+            draw();
+        }
+
+        function setOrder(order) {
+            state.order = order;
+            draw();
+            renderControls();
+            completeStep(3);
+        }
+
+        function applySymmetry() {
+            state.symmetric = true;
+            draw();
+            completeStep(4);
+        }
+
+        // ── Modal ──
+        function showConcept(step) {
+            if (state.completedSteps.has(step)) return;
+            const c = CONCEPTS[step];
+            document.getElementById('modalIcon').textContent = c.icon;
+            document.getElementById('modalTitle').textContent = c.title;
+            document.getElementById('modalBody').innerHTML = c.body;
+            document.getElementById('modal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+
+        // ── Finish ──
+        function finishExercise() {
+            document.getElementById('completion-modal').style.display = 'flex';
+        }
+
+        // ═══════════════════════════════
+        //  INIT
+        // ═══════════════════════════════
+        resize();
+        updateUI();
+        showConcept(1);
+    </script>
+</body>
+
+</html>
