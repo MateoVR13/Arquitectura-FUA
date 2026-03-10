@@ -39,7 +39,7 @@ const ERAS = [
         icon: FaLandmark,
         color: '#FFD700',
         glowClass: 'glowGold',
-        img: 'https://images.unsplash.com/photo-1555952494-efd681c7e3f9?q=80&w=600&auto=format&fit=crop',
+        img: 'https://i0.wp.com/www.glosarioarquitectonico.com/wp-content/uploads/2015/12/historicista-1.jpg?ssl=1',
         summary: 'Mirar al pasado para construir el presente. La arquitectura toma prestados los vocabularios griegos, romanos o góticos y los reinterpreta.',
         detail: 'El Historicismo no es una copia fiel de lo antiguo, sino una reinterpretación selectiva. Los arquitectos del siglo XIX estudiaban los órdenes clásicos (dórico, jónico, corintio) y los vocabularios góticos para generar nuevas combinaciones. El ornamento era un código cultural que vinculaba el edificio con una tradición reconocible.\n\nReferentes clave: Viollet-le-Duc (restauración del gótico), Charles Garnier (Ópera de París), Karl Friedrich Schinkel (neoclasicismo prusiano).\n\nEl historicismo nos enseña que toda forma arquitectónica carga un significado cultural heredado. Diseñar es, en cierto modo, dialogar con los muertos.',
         architects: 'Viollet-le-Duc · Charles Garnier · Karl Friedrich Schinkel'
@@ -51,7 +51,7 @@ const ERAS = [
         icon: FaBuilding,
         color: '#C0C0C0',
         glowClass: 'glowSilver',
-        img: 'https://images.unsplash.com/photo-1479839672679-a46483c0e7c8?q=80&w=600&auto=format&fit=crop',
+        img: 'https://media.timeout.com/images/105309873/image.jpg',
         summary: '"La forma sigue la función". Elimina el ornamento y exalta la honestidad material: concreto, acero y vidrio.',
         detail: 'El Modernismo es la revolución más radical en la historia de la arquitectura. Nace de la industrialización y la urgencia social de la posguerra. Le Corbusier formula los "5 puntos de la arquitectura moderna": pilotis, planta libre, fachada libre, ventana corrida y terraza jardín.\n\nMies van der Rohe proclama "menos es más", llevando la estructura a su mínima expresión poética. La Villa Saboya, el Pabellón de Barcelona y la Casa Farnsworth son manifiestos construidos.\n\nEl Modernismo nos enseña que la estructura no debe esconderse: es el poema del edificio. La belleza emerge del orden racional, no del adorno.',
         architects: 'Le Corbusier · Mies van der Rohe · Walter Gropius · Oscar Niemeyer'
@@ -63,7 +63,7 @@ const ERAS = [
         icon: FaPalette,
         color: '#FF69B4',
         glowClass: 'glowPink',
-        img: 'https://images.unsplash.com/photo-1470723710355-95304d8aece4?q=80&w=600&auto=format&fit=crop',
+        img: 'https://tecnne.com/wp-content/uploads/2020/10/Arata-Isozaki-Disney-Building-tecnne.jpg',
         summary: 'La rebelión contra la caja blanca. Reintroduce el color, el humor y la referencia histórica como lenguaje legítimo.',
         detail: 'Robert Venturi publica "Complejidad y Contradicción en Arquitectura" (1966), el manifiesto fundacional que declara: "menos es aburrido". El Post-Modernismo reacciona contra la frialdad del International Style reintroduciendo el ornamento, el color y la ironía.\n\nMichael Graves diseña el edificio Portland con columnas gigantes de colores; Aldo Rossi revisita la tipología de la ciudad europea. La arquitectura deja de ser un ejercicio técnico puro para convertirse en un acto comunicativo.\n\nNos enseña que la arquitectura es un lenguaje que el ciudadano debe poder leer. El edificio no solo funciona: comunica, provoca y dialoga con su contexto cultural.',
         architects: 'Robert Venturi · Michael Graves · Aldo Rossi · Charles Moore'
@@ -75,7 +75,7 @@ const ERAS = [
         icon: FaProjectDiagram,
         color: '#BA55D3',
         glowClass: 'glowPurple',
-        img: 'https://images.unsplash.com/photo-1511818966892-d7d671e672a2?q=80&w=800&auto=format&fit=crop',
+        img: 'https://crehana-blog.imgix.net/media/filer_public/8b/c8/8bc8c8f9-be8a-4d99-a9ca-b31ca5492eb6/arquitectura-deconstructivista-que-es.jpg?auto=format&q=50',
         summary: 'Fragmentar para descubrir nuevas relaciones. Gehry, Hadid y Libeskind rompen los planos ortogonales.',
         detail: 'La exposición "Deconstructivist Architecture" del MoMA (1988) presenta a siete arquitectos que desafían la ortogonalidad: Gehry, Hadid, Koolhaas, Libeskind, Eisenman, Coop Himmelb(l)au y Tschumi. Se inspiran en el Constructivismo ruso y la filosofía de Derrida.\n\nEl Guggenheim Bilbao de Frank Gehry demuestra que un edificio puede revitalizar una ciudad entera. Zaha Hadid imagina espacios de fluidez antigravitatoria. Daniel Libeskind inserta fracturas emocionales en la materia (Museo Judío de Berlín).\n\nNos enseña que la inestabilidad visual puede generar experiencias espaciales profundas. La estructura exhibe su complejidad como lenguaje expresivo, no como defecto.',
         architects: 'Frank Gehry · Zaha Hadid · Daniel Libeskind · Rem Koolhaas'
@@ -87,7 +87,7 @@ const ERAS = [
         icon: FaLaptopCode,
         color: '#00CED1',
         glowClass: 'glowCyan',
-        img: 'https://images.unsplash.com/photo-1518005020951-eccb494ad742?q=80&w=600&auto=format&fit=crop',
+        img: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgYCyw8-xY_CuSHHjAmhFYEoKYvMLnOWugA98-9waM555zRa3grG0qMKxgyhD0T4bDHDFM6Lzay7QArzTs-32AtDGh35_bqK1Y7KyOK9hRkuQDG3VO5Oa3kViRH4qaEuWHmRsOGMXDB_y5w/s1600/Museo+Soumaya+1.jpg',
         summary: 'La arquitectura como sistema algorítmico. Las formas nacen de reglas matemáticas y datos ambientales.',
         detail: 'Patrik Schumacher (Zaha Hadid Architects) acuña el término "Parametricismo" como el estilo del siglo XXI. Las formas ya no se dibujan: se programan. Los algoritmos procesan datos de orientación solar, flujos peatonales y requisitos estructurales para generar geometrías que la mano humana jamás podría trazar.\n\nBjarke Ingels (BIG) introduce la "hedonistic sustainability": arquitectura paramétrica que además es socialmente generosa. El Heydar Aliyev Center de Hadid elimina la distinción entre suelo, pared y techo.\n\nNos enseña que la computación no reemplaza al arquitecto: amplifica su capacidad de exploración. El diseño paramétrico es la frontera donde ciencia, arte y tecnología convergen.',
         architects: 'Patrik Schumacher · Bjarke Ingels · MVRDV · Kengo Kuma'

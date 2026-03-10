@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { FaHome } from 'react-icons/fa';
 import PageTransition from '@/components/PageTransition';
 
 const modalOverlayStyle = {
@@ -35,7 +37,7 @@ export default function Exercise1Block4() {
 
         const handleMessage = (event) => {
             if (event.data && event.data.type === 'exercise-complete' && event.data.exercise === 'ex7_trama') {
-                setTimeout(() => setShowModal(true), 500);
+                router.push('/bloques/4/ex2');
             }
         };
 
@@ -50,6 +52,16 @@ export default function Exercise1Block4() {
     return (
         <PageTransition>
             <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#0a0a0a', position: 'relative' }}>
+                <Link href="/laboratorio" style={{
+                    position: 'fixed', top: '20px', right: '20px', zIndex: 100,
+                    width: '44px', height: '44px', borderRadius: '50%',
+                    background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)',
+                    border: '1px solid rgba(255,255,255,0.15)', color: '#fff',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', fontSize: '1.1rem', textDecoration: 'none'
+                }} title="Volver al Laboratorio">
+                    <FaHome />
+                </Link>
                 <iframe
                     src="/exercises/ex7_trama/index.html"
                     style={{ width: '100%', height: '100%', border: 'none' }}

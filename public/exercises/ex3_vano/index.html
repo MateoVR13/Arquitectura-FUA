@@ -391,54 +391,58 @@
                 <label>Canto (Altura de Viga)</label>
                 <input type="range" id="canto-slider" min="0.2" max="2.0" step="0.1" value="0.2" disabled>
             </div>
+            <button id="btn-completar" class="btn-action"
+                style="display:none; background:rgba(200,255,1,0.2); border-color:#c8ff01; color:#c8ff01;">
+                ✓ Completar Ejercicio
+            </button>
         </div>
-    </div>
 
-    <!-- Tutor Bubble -->
-    <div id="tutor-bubble">
-        <div class="tutor-avatar">👩‍🏫</div>
-        <div class="tutor-content">
-            <div class="tutor-label">Tutor</div>
-            <div class="tutor-text" id="tutorText">Bienvenido. Haz clic en <strong>2 puntos del suelo</strong> para
-                colocar los apoyos verticales (muros o columnas).</div>
-        </div>
-    </div>
-
-    <!-- Modal de Conceptos -->
-    <div id="concept-modal">
-        <div class="modal-content">
-            <div class="modal-title" id="modal-title">Concepto</div>
-            <div class="modal-body" id="modal-body">Descripción del concepto.</div>
-            <button class="btn-continue" onclick="closeModal()">Entendido</button>
-        </div>
-    </div>
-
-    <!-- Completion Modal -->
-    <div id="completion-modal"
-        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:500; align-items:center; justify-content:center;">
-        <div
-            style="background:#1a1a1a; border-left:5px solid #C8FF01; border-radius:16px; padding:40px; max-width:500px; width:90%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.8);">
-            <div style="font-size:3rem; margin-bottom:15px;">🎉</div>
-            <h2
-                style="color:#C8FF01; font-size:1.5rem; font-weight:900; margin-bottom:15px; font-family:'Montserrat',sans-serif;">
-                ¡Simulación Completada!</h2>
-            <p
-                style="color:#ddd; font-size:1rem; line-height:1.7; margin-bottom:25px; font-family:'Montserrat',sans-serif;">
-                Has dominado los conceptos de apoyo, vano y flexión. Puedes seguir experimentando con la simulación o
-                volver al tablero de bloques.</p>
-            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-                <button onclick="document.getElementById('completion-modal').style.display='none'"
-                    style="background:transparent; color:#fff; border:1px solid #555; padding:12px 24px; font-weight:bold; border-radius:6px; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:0.95rem;">Seguir
-                    Explorando</button>
-                <button onclick="window.parent.postMessage({type:'exercise-complete',exercise:'ex3_vano'},'*')"
-                    style="background:#C8FF01; color:#000; border:none; padding:12px 24px; font-weight:bold; border-radius:6px; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:0.95rem;">Volver
-                    al Tablero</button>
+        <!-- Tutor Bubble -->
+        <div id="tutor-bubble">
+            <div class="tutor-avatar">👩‍🏫</div>
+            <div class="tutor-content">
+                <div class="tutor-label">Tutor</div>
+                <div class="tutor-text" id="tutorText">Bienvenido. Haz clic en <strong>2 puntos del suelo</strong> para
+                    colocar los apoyos verticales (muros o columnas).</div>
             </div>
         </div>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="app.js"></script>
+
+        <!-- Modal de Conceptos -->
+        <div id="concept-modal">
+            <div class="modal-content">
+                <div class="modal-title" id="modal-title">Concepto</div>
+                <div class="modal-body" id="modal-body">Descripción del concepto.</div>
+                <button class="btn-continue" onclick="closeModal()">Entendido</button>
+            </div>
+        </div>
+
+        <!-- Completion Modal -->
+        <div id="completion-modal"
+            style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:500; align-items:center; justify-content:center;">
+            <div
+                style="background:#1a1a1a; border-left:5px solid #C8FF01; border-radius:16px; padding:40px; max-width:500px; width:90%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.8);">
+                <div style="font-size:3rem; margin-bottom:15px;">🎉</div>
+                <h2
+                    style="color:#C8FF01; font-size:1.5rem; font-weight:900; margin-bottom:15px; font-family:'Montserrat',sans-serif;">
+                    ¡Simulación Completada!</h2>
+                <p
+                    style="color:#ddd; font-size:1rem; line-height:1.7; margin-bottom:25px; font-family:'Montserrat',sans-serif;">
+                    Has dominado los conceptos de apoyo, vano y flexión. Puedes seguir experimentando con la simulación
+                    o
+                    volver al tablero de bloques.</p>
+                <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                    <button onclick="document.getElementById('completion-modal').style.display='none'"
+                        style="background:transparent; color:#fff; border:1px solid #555; padding:12px 24px; font-weight:bold; border-radius:6px; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:0.95rem;">Seguir
+                        Explorando</button>
+                    <button onclick="window.parent.postMessage({type:'exercise-complete',exercise:'ex3_vano'},'*')"
+                        style="background:#C8FF01; color:#000; border:none; padding:12px 24px; font-weight:bold; border-radius:6px; cursor:pointer; font-family:'Montserrat',sans-serif; font-size:0.95rem;">Volver
+                        al Tablero</button>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+        <script src="app.js"></script>
 </body>
 
 </html>

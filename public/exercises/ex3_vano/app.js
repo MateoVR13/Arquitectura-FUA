@@ -87,6 +87,7 @@ const matSelect = document.getElementById('material-select');
 const cantoSlider = document.getElementById('canto-slider');
 const controlsPanel = document.getElementById('controls-panel');
 const btnTrazar = document.getElementById('btn-trazar');
+const btnCompletar = document.getElementById('btn-completar');
 const configControls = document.querySelectorAll('.config-control');
 
 // Raycaster
@@ -128,6 +129,7 @@ function updateUI() {
         configControls.forEach(c => c.style.display = 'flex');
         matSelect.removeAttribute('disabled');
         cantoSlider.removeAttribute('disabled');
+        btnCompletar.style.display = 'flex';
     }
 }
 
@@ -149,6 +151,12 @@ window.closeModal = function () {
         cm.style.display = 'flex';
     }
 };
+
+// ── Completar button: directly show completion modal ──
+btnCompletar.addEventListener('click', () => {
+    const cm = document.getElementById('completion-modal');
+    cm.style.display = 'flex';
+});
 
 // ── Step 1 button: Trazar Viga ──
 btnTrazar.addEventListener('click', () => {

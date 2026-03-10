@@ -31,7 +31,7 @@ const CONCEPTS = [
         icon: '🗺️',
         color: '#4CAF50',
         glowClass: 'glowGreen',
-        img: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=800&auto=format&fit=crop',
+        img: 'https://1.bp.blogspot.com/-wGrsWnC8MyA/XrkWL9as9jI/AAAAAAAAXYU/4xZ9ss6QYWQfTWxV5KVhdaK1OFCZDRvCACLcBGAsYHQ/s1600/urban-fabric-trama-urbana-ciudades-urbanismo.jpg',
         summary: 'El patrón formado por calles, manzanas y espacios abiertos. Representa la historia y lógica de crecimiento de un lugar.',
         detail: 'La trama urbana es el ADN de la ciudad. Es el patrón formado por las calles, manzanas y espacios abiertos que representa la historia y la lógica de crecimiento de un lugar. Una trama puede ser ortogonal (recta), radiocéntrica u orgánica.\n\nLa forma de la ciudad determina cómo viven sus ciudadanos. Una trama ortogonal (como Manhattan) facilita la orientación y la división eficiente del suelo. Una trama radiocéntrica (como París) jerarquiza los flujos hacia un centro monumental. Una trama orgánica (como los cascos medievales) responde a la topografía natural y crea recorridos impredecibles.\n\nAl igual que en un edificio, la ciudad necesita un andamiaje invisible que regule la posición de las manzanas y las calles. Una retícula clara facilita la orientación y optimiza el movimiento.'
     },
@@ -41,7 +41,7 @@ const CONCEPTS = [
         icon: '🏛️',
         color: '#FFB300',
         glowClass: 'glowAmber',
-        img: 'https://images.unsplash.com/photo-1517760444937-f6397edcbbcd?q=80&w=800&auto=format&fit=crop',
+        img: 'https://bogota.gov.co/sites/default/files/styles/1050px/public/2022-08/vital.jpg',
         summary: 'El espacio de propiedad y uso común donde se ejerce la ciudadanía. Incluye calles, plazas y parques.',
         detail: 'El espacio público es el vacío vital de la ciudad: el espacio de propiedad y uso común donde se ejerce la ciudadanía. Incluye calles, plazas y parques. En arquitectura urbana, el vacío es el material principal que se debe diseñar.\n\nNo es "lo que sobra" entre edificios. Es el escenario donde ocurre la vida comunitaria: el encuentro casual, la protesta ciudadana, el juego de los niños, el paseo del anciano. Una ciudad sin espacio público es una ciudad sin alma.\n\nDiseñar espacio público es liberar área del suelo para que la gente lo habite. Es la expresión máxima de la democracia espacial: un lugar que pertenece a todos por igual.'
     },
@@ -51,7 +51,7 @@ const CONCEPTS = [
         icon: '🚶',
         color: '#00BCD4',
         glowClass: 'glowCyan',
-        img: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?q=80&w=800&auto=format&fit=crop',
+        img: 'https://i.ytimg.com/vi/RwGp_VOOkF4/maxresdefault.jpg',
         summary: 'La relación de proporción entre el entorno construido y las dimensiones del ser humano. Prioriza al peatón.',
         detail: 'La escala humana es la relación de proporción entre el entorno construido y las dimensiones y capacidades del ser humano. Un diseño con escala humana prioriza al peatón sobre el vehículo.\n\nSi los edificios son demasiado altos y la calle demasiado estrecha, el ciudadano se siente oprimido. Si los retiros son excesivos y las fachadas mudas, la calle se siente insegura y desolada. La buena urbanística busca proporciones que respeten la percepción y el confort del peatón.\n\nJan Gehl, urbanista danés, demostró que las ciudades más amables son aquellas diseñadas a velocidad de 5 km/h (la velocidad de caminar), no a 60 km/h (la velocidad del automóvil). La escala humana es la diferencia entre una ciudad para máquinas y una ciudad para personas.'
     },
@@ -61,7 +61,7 @@ const CONCEPTS = [
         icon: '🎨',
         color: '#C8FF01',
         glowClass: 'glowLime',
-        img: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?q=80&w=800&auto=format&fit=crop',
+        img: 'https://propiedades.com/blog/wp-content/uploads/2022/11/tipo-de-uso-de-suelo.jpg',
         summary: 'Las funciones que ocurren en los edificios: vivienda, comercio, oficinas. La mezcla de usos da vida a las calles.',
         detail: 'El uso del suelo se refiere a las funciones que ocurren en los edificios: vivienda, comercio, oficinas, cultura, educación. Una ciudad que promueve la mezcla de usos garantiza que siempre haya vida en las calles.\n\nJane Jacobs, en "Muerte y vida de las grandes ciudades" (1961), demostró que la separación rígida de funciones (zonificación moderna) mataba la vitalidad urbana. Un barrio donde solo hay oficinas queda desierto a las 6 PM. Un barrio donde solo hay vivienda carece de servicios diurnos.\n\nLa mezcla de usos genera lo que Jacobs llamó "ojos en la calle": la vigilancia natural que surge cuando diferentes actividades coexisten en horarios complementarios. Vivienda + comercio + cultura = ciudad viva las 24 horas.'
     },
@@ -71,7 +71,7 @@ const CONCEPTS = [
         icon: '🧱',
         color: '#FF69B4',
         glowClass: 'glowPink',
-        img: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?q=80&w=800&auto=format&fit=crop',
+        img: 'https://lycorisestudio.com/wp-content/uploads/LycorisEstudio_ElementosKevinLynch01-2048x1762.png',
         summary: 'La transición entre zonas. Un borde puede ser barrera infranqueable o membrana porosa que invita a entrar.',
         detail: 'El límite y borde urbano es la transición entre diferentes zonas o entre el interior y el exterior de la manzana. Un borde puede ser una barrera infranqueable o una membrana porosa que invita a entrar.\n\nKevin Lynch, en "La imagen de la ciudad" (1960), identificó los bordes como uno de los cinco elementos que estructuran la percepción urbana. Un río sin puentes es un borde-barrera; una avenida arbolada con cruces peatonales es un borde-costura.\n\nLas fachadas de los edificios no son solo paredes: son los límites que contienen el espacio de la calle. Un plano bien ubicado puede invitar al encuentro (fachada comercial activa) o generar aislamiento (muro ciego de estacionamiento). La calidad del borde define la calidad de la experiencia urbana.'
     },
@@ -81,7 +81,7 @@ const CONCEPTS = [
         icon: '📍',
         color: '#42A5F5',
         glowClass: 'glowBlue',
-        img: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?q=80&w=800&auto=format&fit=crop',
+        img: 'https://www.atlantico.gov.co/images/stories/cabezote_plaza.jpg',
         summary: 'Lugares estratégicos donde se cruzan los flujos y se concentra la gente: esquinas, estaciones, plazas.',
         detail: 'Los nodos de actividad son lugares estratégicos donde se cruzan los flujos y se concentra la gente. Puede ser una esquina importante, una estación de transporte o una plaza.\n\nKevin Lynch los definió como puntos de intensidad: los lugares donde la ciudad se vuelve más densa en significado y actividad. Un nodo exitoso atrae personas por múltiples razones simultáneamente (transporte + comercio + cultura).\n\nDiseñar un nodo es lograr que varios ejes (pautas) converjan en un mismo punto, creando un campo gravitatorio urbano. Los mejores nodos son aquellos que generan una experiencia multisensorial: sonido de conversaciones, olor a comida, movimiento constante, luz natural filtrada por árboles.'
     }

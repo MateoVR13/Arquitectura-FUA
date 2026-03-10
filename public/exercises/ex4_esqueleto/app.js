@@ -134,10 +134,13 @@ window.closeModal = function () {
     updateUI();
     updateTutor();
 
-    // If we just advanced past 3 (step index), show completion modal
+    // If we just advanced past 3 (step index), show completion modal after a delay
+    // so the user can appreciate the arriostramiento visual change
     if (currentStep > 3) {
-        const cm = document.getElementById('completion-modal');
-        cm.style.display = 'flex';
+        setTimeout(() => {
+            const cm = document.getElementById('completion-modal');
+            cm.style.display = 'flex';
+        }, 3000);
     }
 };
 
