@@ -11,9 +11,13 @@ import {
     FaTh,
     FaWind,
     FaFlask,
-    FaPlayCircle
+    FaPlayCircle,
+    FaPodcast,
+    FaImage
 } from 'react-icons/fa';
 import PageTransition from '@/components/PageTransition';
+import PodcastPlayer from '@/components/PodcastPlayer';
+import ImageCarousel from '@/components/ImageCarousel';
 import styles from './block2.module.css';
 
 export default function Block2Client({ user }) {
@@ -37,7 +41,7 @@ export default function Block2Client({ user }) {
                 </div>
 
                 {/* Video Section – same style as Block 1 */}
-                <div className="glass-panel" style={{ height: '450px', marginBottom: '60px', borderRadius: '16px', overflow: 'hidden', position: 'relative', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div className="glass-panel" style={{ aspectRatio: '16/9', marginBottom: '60px', borderRadius: '16px', overflow: 'hidden', position: 'relative', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {!showVideo ? (
                         <div style={{ textAlign: 'center', zIndex: 2 }}>
                             <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(200,255,1,0.2)', display: 'flex', border: '1px solid var(--ua-lime)', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px auto', cursor: 'pointer', boxShadow: '0 0 30px rgba(200,255,1,0.3)' }} onClick={() => setShowVideo(true)}>
@@ -47,7 +51,7 @@ export default function Block2Client({ user }) {
                         </div>
                     ) : (
                         <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-                            <iframe width="100%" height="100%" src="https://app.heygen.com/embeds/4758e3b2c50b4759b136c742da10d58d" title="Bienvenida al Bloque 2: Estructura y Tectónica" frameBorder="0" allow="encrypted-media; fullscreen;" allowFullScreen />
+                            <iframe width="100%" height="100%" src="https://app.heygen.com/embeds/6c9ed0e8d8b54e8aafc915a57cc394ed" title="Bienvenida al Bloque 2: Estructura y Tectónica" frameBorder="0" allow="encrypted-media; fullscreen;" allowFullScreen />
                             <button onClick={() => setShowVideo(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(0,0,0,0.7)', border: '1px solid var(--border-glass)', color: '#fff', padding: '8px 16px', cursor: 'pointer', borderRadius: '8px' }}>Cerrar</button>
                         </div>
                     )}
@@ -143,6 +147,67 @@ export default function Block2Client({ user }) {
                         <FaWind className={styles.decorIcon} />
                     </motion.div>
 
+                </div>
+
+                {/* ── Media Section ── */}
+                <h2 style={{ fontSize: '2rem', borderBottom: '1px solid var(--border-glass)', paddingBottom: '10px', marginTop: '60px', marginBottom: '10px' }}>
+                    📡 Recursos Complementarios
+                </h2>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '30px', fontSize: '0.95rem' }}>
+                    Material audiovisual y gráfico para profundizar en los conceptos del bloque.
+                </p>
+
+                {/* Podcast – full width */}
+                <PodcastPlayer
+                    src="/audios/audio_bloque_2.m4a"
+                    title="Podcast Bloque 2"
+                    description="Estructura y Tectónica"
+                    accentColor="var(--ua-lime)"
+                />
+
+                {/* Gallery Carousel */}
+                <div style={{ marginTop: '30px' }}>
+                    <ImageCarousel
+                        accentColor="var(--ua-lime)"
+                        images={[
+                            {
+                                src: '/galeria/b2_pompidou.jpg',
+                                title: 'Centre Pompidou',
+                                architect: 'Renzo Piano & Richard Rogers, 1977',
+                                description: 'La estructura como fachada: columnas, vigas, arriostramientos y conductos expuestos celebran la tectónica sin ocultarla. La honestidad constructiva llevada al extremo.'
+                            },
+                            {
+                                src: '/galeria/b2_farnsworth.jpg',
+                                title: 'Casa Farnsworth',
+                                architect: 'Mies van der Rohe, 1951',
+                                description: 'Columnas de acero en I que sostienen losas planas suspendidas. La compresión se resuelve con perfiles mínimos, liberando el vacío interior como protagonista absoluto.'
+                            },
+                            {
+                                src: '/galeria/b2_opera_sydney.jpg',
+                                title: 'Ópera de Sídney',
+                                architect: 'Jørn Utzon, 1973',
+                                description: 'Cascarones de concreto pretensado que trabajan a compresión, resolviendo grandes luces sin columnas interiores. La estructura define la forma y la identidad del edificio.'
+                            },
+                            {
+                                src: '/galeria/b2_puente_millau.jpg',
+                                title: 'Viaducto de Millau',
+                                architect: 'Norman Foster & Michel Virlogeux, 2004',
+                                description: 'Cables de acero en tracción pura sostienen el tablero del puente más alto del mundo. La tensión permite salvar vanos de 342 metros entre pilares.'
+                            },
+                            {
+                                src: '/galeria/b2_unite_habitation.jpg',
+                                title: 'Unité d\'Habitation',
+                                architect: 'Le Corbusier, 1952',
+                                description: 'Malla estructural de concreto armado con pilotis que liberan el suelo. Los esfuerzos de compresión y flexión se organizan en una retícula racional.'
+                            },
+                            {
+                                src: '/galeria/b2_catedral_gotica.jpg',
+                                title: 'Catedral Gótica – Bóvedas de Crucería',
+                                architect: 'Tradición Medieval, Siglos XII–XV',
+                                description: 'Los arcos apuntados y arbotantes canalizan los empujes de compresión hasta el suelo, permitiendo muros casi transparentes. La malla de nervaduras es el esqueleto visible de la piedra.'
+                            }
+                        ]}
+                    />
                 </div>
 
                 {/* Exercises Section */}

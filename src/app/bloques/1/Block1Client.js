@@ -137,7 +137,7 @@ export default function Block1Client({ user }) {
                                     </div>
 
                                     {/* Video Section at the top of the theory */}
-                                    <div className="glass-panel" style={{ height: '450px', marginBottom: '60px', borderRadius: '16px', overflow: 'hidden', position: 'relative', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <div className="glass-panel" style={{ aspectRatio: '16/9', marginBottom: '60px', borderRadius: '16px', overflow: 'hidden', position: 'relative', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         {!showVideo ? (
                                             <div style={{ textAlign: 'center', zIndex: 2 }}>
                                                 <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(200,255,1,0.2)', display: 'flex', border: '1px solid var(--ua-lime)', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px auto', cursor: 'pointer', boxShadow: '0 0 30px rgba(200,255,1,0.3)' }} onClick={() => setShowVideo(true)}>

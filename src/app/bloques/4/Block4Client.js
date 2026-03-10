@@ -20,6 +20,8 @@ import {
     FaLock
 } from 'react-icons/fa';
 import PageTransition from '@/components/PageTransition';
+import PodcastPlayer from '@/components/PodcastPlayer';
+import ImageCarousel from '@/components/ImageCarousel';
 import styles from './block4.module.css';
 
 const CONCEPTS = [
@@ -107,20 +109,18 @@ export default function Block4Client({ user }) {
                 </div>
 
                 {/* ── Video Section ── */}
-                <div className="glass-panel" style={{ height: '450px', marginBottom: '50px', borderRadius: '16px', overflow: 'hidden', position: 'relative', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div className="glass-panel" style={{ aspectRatio: '16/9', marginBottom: '50px', borderRadius: '16px', overflow: 'hidden', position: 'relative', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {!showVideo ? (
                         <div style={{ textAlign: 'center', zIndex: 2 }}>
                             <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(0,188,212,0.2)', display: 'flex', border: '1px solid #00BCD4', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px auto', cursor: 'pointer', boxShadow: '0 0 30px rgba(0,188,212,0.3)' }} onClick={() => setShowVideo(true)}>
                                 <FaPlayCircle size={40} color="#00BCD4" />
                             </div>
                             <p style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 'bold' }}>Reproducir Video Prólogo – Bloque 4</p>
-                            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '8px' }}>Próximamente</p>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '8px' }}>Video Prólogo IA</p>
                         </div>
                     ) : (
                         <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#111' }}>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>🎬 Espacio reservado para video del Bloque 4</p>
-                            </div>
+                            <iframe width="100%" height="100%" src="https://app.heygen.com/embeds/4e6cc0edef5440ada9c9c731f40cfb6c" title="HeyGen video player" frameBorder="0" allow="encrypted-media; fullscreen;" allowFullScreen />
                             <button onClick={() => setShowVideo(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(0,0,0,0.7)', border: '1px solid var(--border-glass)', color: '#fff', padding: '8px 16px', cursor: 'pointer', borderRadius: '8px' }}>Cerrar</button>
                         </div>
                     )}
@@ -224,17 +224,57 @@ export default function Block4Client({ user }) {
                     Material audiovisual y gráfico para profundizar en los conceptos del bloque.
                 </p>
 
-                <div className={styles.mediaSection}>
-                    <div className={styles.mediaCard}>
-                        <FaPodcast className={styles.mediaIcon} style={{ color: '#00BCD4' }} />
-                        <h4 style={{ color: '#fff' }}>Podcast</h4>
-                        <p>Espacio reservado para episodio de podcast sobre Urbanismo y diseño de la ciudad a escala humana.</p>
-                    </div>
-                    <div className={styles.mediaCard}>
-                        <FaImage className={styles.mediaIcon} style={{ color: '#00BCD4' }} />
-                        <h4 style={{ color: '#fff' }}>Galería de Imágenes</h4>
-                        <p>Espacio reservado para galería fotográfica de intervenciones urbanas y espacio público referente.</p>
-                    </div>
+                {/* Podcast – full width */}
+                <PodcastPlayer
+                    src="/audios/audio_bloque_4.m4a"
+                    title="Podcast Bloque 4"
+                    description="Urbanismo y escala humana"
+                    accentColor="#00BCD4"
+                />
+
+                {/* Gallery Carousel */}
+                <div style={{ marginTop: '30px' }}>
+                    <ImageCarousel
+                        accentColor="#00BCD4"
+                        images={[
+                            {
+                                src: '/galeria/b4_barcelona_cerdá.jpg',
+                                title: 'Ensanche de Barcelona',
+                                architect: 'Ildefons Cerdà, 1860',
+                                description: 'Trama ortogonal con chaflanes octogonales que permiten visibilidad en cada cruce. El ejemplo más influyente de planificación urbana racional del siglo XIX.'
+                            },
+                            {
+                                src: '/galeria/b4_copenhague.jpg',
+                                title: 'Strøget – Copenhague',
+                                architect: 'Jan Gehl, Peatonalizada en 1962',
+                                description: 'La calle peatonal más larga de Europa. Ejemplo de escala humana: la ciudad diseñada a velocidad de 5 km/h para el peatón, no para el automóvil.'
+                            },
+                            {
+                                src: '/galeria/b4_highline.jpg',
+                                title: 'High Line – Nueva York',
+                                architect: 'Diller Scofidio + Renfro, 2009',
+                                description: 'Vía férrea abandonada transformada en espacio público elevado. El vacío vital de la ciudad recuperado como parque lineal y nodo de actividad.'
+                            },
+                            {
+                                src: '/galeria/b4_medellín.jpg',
+                                title: 'Metrocable – Medellín',
+                                architect: 'EDU / Alcaldía de Medellín, 2004',
+                                description: 'Infraestructura que conecta barrios marginales con el centro. Ejemplo de cómo el transporte público puede transformar la trama urbana y la equidad territorial.'
+                            },
+                            {
+                                src: '/galeria/b4_supermanzana.jpg',
+                                title: 'Supermanzanas – Barcelona',
+                                architect: 'Salvador Rueda / BCNecología, 2016',
+                                description: 'Agrupación de 9 manzanas del Ensanche para priorizar al peatón. El uso del suelo se transforma: menos tráfico, más espacio público y mezcla de actividades.'
+                            },
+                            {
+                                src: '/galeria/b4_brasilia.jpg',
+                                title: 'Plan Piloto de Brasilia',
+                                architect: 'Lucio Costa & Oscar Niemeyer, 1960',
+                                description: 'Ciudad diseñada desde cero con trama monumental. Ejemplo radical de separación de funciones y escala del automóvil: un caso de estudio sobre límites y bordes urbanos.'
+                            }
+                        ]}
+                    />
                 </div>
 
                 {/* ── Exercises ── */}

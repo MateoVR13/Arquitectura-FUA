@@ -27,6 +27,8 @@ import {
     FaColumns
 } from 'react-icons/fa';
 import PageTransition from '@/components/PageTransition';
+import PodcastPlayer from '@/components/PodcastPlayer';
+import ImageCarousel from '@/components/ImageCarousel';
 import styles from './block3.module.css';
 
 const ERAS = [
@@ -190,20 +192,18 @@ export default function Block3Client({ user }) {
                 </div>
 
                 {/* ── Video Section ── */}
-                <div className="glass-panel" style={{ height: '450px', marginBottom: '60px', borderRadius: '16px', overflow: 'hidden', position: 'relative', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div className="glass-panel" style={{ aspectRatio: '16/9', marginBottom: '60px', borderRadius: '16px', overflow: 'hidden', position: 'relative', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {!showVideo ? (
                         <div style={{ textAlign: 'center', zIndex: 2 }}>
                             <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(200,255,1,0.2)', display: 'flex', border: '1px solid var(--ua-lime)', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px auto', cursor: 'pointer', boxShadow: '0 0 30px rgba(200,255,1,0.3)' }} onClick={() => setShowVideo(true)}>
                                 <FaPlayCircle size={40} color="var(--ua-lime)" />
                             </div>
                             <p style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 'bold' }}>Reproducir Video Prólogo – Bloque 3</p>
-                            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '8px' }}>Próximamente</p>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '8px' }}>Video Prólogo IA</p>
                         </div>
                     ) : (
                         <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#111' }}>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>🎬 Espacio reservado para video del Bloque 3</p>
-                            </div>
+                            <iframe width="100%" height="100%" src="https://app.heygen.com/embeds/fe7a3dedbdac4cc4b20013e6a73826fa" title="HeyGen video player" frameBorder="0" allow="encrypted-media; fullscreen;" allowFullScreen />
                             <button onClick={() => setShowVideo(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(0,0,0,0.7)', border: '1px solid var(--border-glass)', color: '#fff', padding: '8px 16px', cursor: 'pointer', borderRadius: '8px' }}>Cerrar</button>
                         </div>
                     )}
@@ -389,17 +389,57 @@ export default function Block3Client({ user }) {
                     Material audiovisual y gráfico para profundizar en los conceptos del bloque.
                 </p>
 
-                <div className={styles.mediaSection}>
-                    <div className={styles.mediaCard}>
-                        <FaPodcast className={styles.mediaIcon} style={{ color: 'var(--ua-lime)' }} />
-                        <h4 style={{ color: '#fff' }}>Podcast</h4>
-                        <p>Espacio reservado para episodio de podcast sobre Lenguaje y Cultura en Arquitectura.</p>
-                    </div>
-                    <div className={styles.mediaCard}>
-                        <FaImage className={styles.mediaIcon} style={{ color: 'var(--ua-lime)' }} />
-                        <h4 style={{ color: '#fff' }}>Galería de Imágenes</h4>
-                        <p>Espacio reservado para galería fotográfica de obras representativas de cada movimiento.</p>
-                    </div>
+                {/* Podcast – full width */}
+                <PodcastPlayer
+                    src="/audios/audio_bloque_3.m4a"
+                    title="Podcast Bloque 3"
+                    description="Lenguaje y Cultura"
+                    accentColor="var(--ua-lime)"
+                />
+
+                {/* Gallery Carousel */}
+                <div style={{ marginTop: '30px' }}>
+                    <ImageCarousel
+                        accentColor="var(--ua-lime)"
+                        images={[
+                            {
+                                src: '/galeria/b3_parthenon.jpg',
+                                title: 'Partenón de Atenas',
+                                architect: 'Ictino y Calícrates, 447 a.C.',
+                                description: 'El templo dórico por excelencia. Proporciones perfectas y refinamientos ópticos que definieron el canon clásico por milenios. Base del vocabulario historicista.'
+                            },
+                            {
+                                src: '/galeria/b3_villa_savoye.jpg',
+                                title: 'Villa Savoye',
+                                architect: 'Le Corbusier, 1931',
+                                description: 'Manifiesto construido de los 5 puntos de la arquitectura moderna: pilotis, planta libre, fachada libre, ventana corrida y terraza jardín.'
+                            },
+                            {
+                                src: '/galeria/b3_portland.jpg',
+                                title: 'Edificio Portland',
+                                architect: 'Michael Graves, 1982',
+                                description: 'Icónico del Post-Modernismo. Reintroduce el color, el ornamento y las referencias clásicas como rebelión contra la austeridad del International Style.'
+                            },
+                            {
+                                src: '/galeria/b3_guggenheim_bilbao.jpg',
+                                title: 'Museo Guggenheim Bilbao',
+                                architect: 'Frank Gehry, 1997',
+                                description: 'El Deconstructivismo en su máxima expresión. Volúmenes de titanio que fragmentan la ortogonalidad y transformaron una ciudad entera.'
+                            },
+                            {
+                                src: '/galeria/b3_heydar_aliyev.jpg',
+                                title: 'Centro Heydar Aliyev',
+                                architect: 'Zaha Hadid Architects, 2012',
+                                description: 'Parametricismo puro. La distinción entre suelo, pared y techo desaparece en una superficie continua generada algorítmicamente.'
+                            },
+                            {
+                                src: '/galeria/b3_opera_paris.jpg',
+                                title: 'Ópera Garnier de París',
+                                architect: 'Charles Garnier, 1875',
+                                description: 'Obra maestra del Historicismo. Fusiona vocabularios neobarrocos y renacentistas en una composición teatral que celebra el ornamento como código cultural.'
+                            }
+                        ]}
+                    />
                 </div>
 
                 {/* ── Exercises ── */}
