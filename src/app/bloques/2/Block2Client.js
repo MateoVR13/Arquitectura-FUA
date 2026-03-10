@@ -196,7 +196,7 @@ export default function Block2Client({ user }) {
                             },
                             {
                                 src: '/galeria/b2_unite_habitation.jpg',
-                                title: 'Unité d\'Habitation',
+                                title: 'Unite d Habitation',
                                 architect: 'Le Corbusier, 1952',
                                 description: 'Malla estructural de concreto armado con pilotis que liberan el suelo. Los esfuerzos de compresión y flexión se organizan en una retícula racional.'
                             },
