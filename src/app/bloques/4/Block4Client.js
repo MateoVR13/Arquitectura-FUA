@@ -157,12 +157,10 @@ export default function Block4Client({ user }) {
                             onClick={() => setSelectedConcept(concept)}
                             style={{ '--card-color': concept.color }}
                         >
-                            <div className={styles.conceptCard} style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'inherit' }}>
-                                <div className={styles.cardIcon}>{concept.icon}</div>
-                                <h4 className={`${styles.cardTitle} ${styles[concept.glowClass]}`}>{concept.title}</h4>
-                                <p className={styles.cardSummary}>{concept.summary}</p>
-                                <span className={styles.exploreCta} style={{ color: concept.color }}>Explorar concepto →</span>
-                            </div>
+                            <div className={styles.cardIcon}>{concept.icon}</div>
+                            <h4 className={`${styles.cardTitle} ${styles[concept.glowClass]}`}>{concept.title}</h4>
+                            <p className={styles.cardSummary}>{concept.summary}</p>
+                            <span className={styles.exploreCta} style={{ color: concept.color }}>Explorar concepto →</span>
                         </motion.div>
                     ))}
                 </div>

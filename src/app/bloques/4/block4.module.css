@@ -56,7 +56,7 @@
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .conceptCard::before {
@@ -67,13 +67,14 @@
     right: 0;
     height: 3px;
     border-radius: 16px 16px 0 0;
+    background: var(--card-color, var(--ua-lime, #c8ff01));
     opacity: 0;
     transition: opacity 0.3s;
 }
 
 .conceptCard:hover {
     transform: translateY(-6px);
-    border-color: rgba(255, 255, 255, 0.15);
+    border-color: var(--card-color, rgba(255, 255, 255, 0.15));
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 

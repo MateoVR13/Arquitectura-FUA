@@ -3,14 +3,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { FaUser, FaLock } from 'react-icons/fa';
+import { FaEnvelope, FaLock } from 'react-icons/fa';
 
 export default function Login() {
     const router = useRouter();
-    const [formData, setFormData] = useState({
-        username: '',
-        password: ''
-    });
+    const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -31,8 +28,7 @@ export default function Login() {
             const data = await res.json();
             if (!res.ok) throw new Error(data.error);
 
-            // on success, redirect based on user role
-            if (formData.username === 'admin') {
+            if (data.isAdmin) {
                 window.location.href = '/dashboard';
             } else {
                 window.location.href = '/laboratorio';
@@ -67,13 +63,19 @@ export default function Login() {
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label><FaUser /> Nombre de Usuario</label>
-                        <input type="text" name="username" required className="form-control" placeholder="Ingresa tu usuario" onChange={handleChange} />
+                        <label><FaEnvelope /> Correo Electrónico</label>
+                        <input type="text" name="email" required className="form-control" placeholder="tu@correo.com" onChange={handleChange} />
                     </div>
 
-                    <div className="form-group" style={{ marginBottom: '30px' }}>
+                    <div className="form-group" style={{ marginBottom: '15px' }}>
                         <label><FaLock /> Contraseña</label>
                         <input type="password" name="password" required className="form-control" placeholder="********" onChange={handleChange} />
+                    </div>
+
+                    <div style={{ textAlign: 'right', marginBottom: '25px' }}>
+                        <Link href="/recuperar" style={{ color: 'var(--ua-lime)', textDecoration: 'none', fontSize: '0.85rem' }}>
+                            ¿Olvidaste tu contraseña?
+                        </Link>
                     </div>
 
                     <button type="submit" className="btn-primary" style={{ width: '100%', padding: '14px', fontSize: '1.1rem' }} disabled={loading}>
