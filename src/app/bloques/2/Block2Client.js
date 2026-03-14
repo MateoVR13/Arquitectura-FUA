@@ -18,7 +18,6 @@ import {
 import PageTransition from '@/components/PageTransition';
 import PodcastPlayer from '@/components/PodcastPlayer';
 import ImageCarousel from '@/components/ImageCarousel';
-import YouTubePlayer from '@/components/YouTubePlayer';
 import styles from './block2.module.css';
 
 export default function Block2Client({ user }) {
@@ -42,7 +41,9 @@ export default function Block2Client({ user }) {
                 </div>
 
                 {/* Video Section */}
-                <YouTubePlayer videoId="KMaeaBJ4xfw" title="Video Prólogo – Bloque 2" />
+                <div style={{ aspectRatio: '16/9', marginBottom: '60px', borderRadius: '16px', overflow: 'hidden', background: '#000', boxShadow: '0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(200,255,1,0.08)', border: '1px solid rgba(200,255,1,0.12)' }}>
+                    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/KMaeaBJ4xfw?rel=0" title="Video Prólogo – Bloque 2" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;" allowFullScreen />
+                </div>
 
                 {/* Bento Grid layout */}
                 <div className={styles.bentoGrid}>
