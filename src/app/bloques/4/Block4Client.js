@@ -110,7 +110,7 @@ export default function Block4Client({ user }) {
 
                 {/* ── Video Section ── */}
                 <div style={{ aspectRatio: '16/9', marginBottom: '50px', overflow: 'hidden', background: '#000', border: '1px solid rgba(0,188,212,0.35)', boxShadow: '0 0 15px rgba(0,188,212,0.15), 0 0 40px rgba(0,188,212,0.05), inset 0 0 15px rgba(0,188,212,0.03)' }}>
-                    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/XigdW4vrkAE?rel=0" title="Video Prólogo – Bloque 4" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;" allowFullScreen />
+                    <iframe width="100%" height="100%" style={{ display: 'block' }} src="https://www.youtube.com/embed/XigdW4vrkAE?rel=0" title="Video Prólogo – Bloque 4" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;" allowFullScreen />
                 </div>
 
                 {/* ── Objective Banner ── */}
@@ -222,7 +222,7 @@ export default function Block4Client({ user }) {
                         accentColor="#00BCD4"
                         images={[
                             {
-                                src: '/galeria/b4_barcelona_cerdá.jpg',
+                                src: '/galeria/b4_barcelona_cerda.jpg',
                                 title: 'Ensanche de Barcelona',
                                 architect: 'Ildefons Cerdà, 1860',
                                 description: 'Trama ortogonal con chaflanes octogonales que permiten visibilidad en cada cruce. El ejemplo más influyente de planificación urbana racional del siglo XIX.'

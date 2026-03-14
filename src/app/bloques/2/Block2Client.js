@@ -42,7 +42,7 @@ export default function Block2Client({ user }) {
 
                 {/* Video Section */}
                 <div style={{ aspectRatio: '16/9', marginBottom: '60px', overflow: 'hidden', background: '#000', border: '1px solid rgba(200,255,1,0.3)', boxShadow: '0 0 15px rgba(200,255,1,0.15), 0 0 40px rgba(200,255,1,0.05), inset 0 0 15px rgba(200,255,1,0.03)' }}>
-                    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/KMaeaBJ4xfw?rel=0" title="Video Prólogo – Bloque 2" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;" allowFullScreen />
+                    <iframe width="100%" height="100%" style={{ display: 'block' }} src="https://www.youtube.com/embed/KMaeaBJ4xfw?rel=0" title="Video Prólogo – Bloque 2" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;" allowFullScreen />
                 </div>
 
                 {/* Bento Grid layout */}
