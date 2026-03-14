@@ -124,7 +124,7 @@ export default function Block4Client({ user }) {
                             <button onClick={() => setShowVideo(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(0,0,0,0.7)', border: '1px solid var(--border-glass)', color: '#fff', padding: '8px 16px', cursor: 'pointer', borderRadius: '8px' }}>Cerrar</button>
                         </div>
                     )}
-                    {!showVideo && <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2000&auto=format&fit=crop" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.3 }} alt="Vista urbana aérea" />}
+
                 </div>
 
                 {/* ── Objective Banner ── */}

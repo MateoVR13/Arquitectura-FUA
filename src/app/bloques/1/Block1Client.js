@@ -151,8 +151,7 @@ export default function Block1Client({ user }) {
                                                 <button onClick={() => setShowVideo(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(0,0,0,0.7)', border: '1px solid var(--border-glass)', color: '#fff', padding: '8px 16px', cursor: 'pointer', borderRadius: '8px' }}>Cerrar</button>
                                             </div>
                                         )}
-                                        {/* Fallback image if video is not playing */}
-                                        {!showVideo && <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.4 }} alt="Arquitectura" />}
+
                                     </div>
 
                                     {/* Article Columns */}
