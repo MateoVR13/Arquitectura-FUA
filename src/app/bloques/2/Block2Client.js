@@ -51,7 +51,7 @@ export default function Block2Client({ user }) {
                         </div>
                     ) : (
                         <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-                            <iframe width="100%" height="100%" src="https://app.heygen.com/embeds/6c9ed0e8d8b54e8aafc915a57cc394ed" title="Bienvenida al Bloque 2: Estructura y Tectónica" frameBorder="0" allow="encrypted-media; fullscreen;" allowFullScreen />
+                            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/Fa3tjnaA2Ls" title="Video Prólogo – Bloque 2" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;" allowFullScreen />
                             <button onClick={() => setShowVideo(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(0,0,0,0.7)', border: '1px solid var(--border-glass)', color: '#fff', padding: '8px 16px', cursor: 'pointer', borderRadius: '8px' }}>Cerrar</button>
                         </div>
                     )}

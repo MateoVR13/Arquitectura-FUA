@@ -203,7 +203,7 @@ export default function Block3Client({ user }) {
                         </div>
                     ) : (
                         <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-                            <iframe width="100%" height="100%" src="https://app.heygen.com/embeds/fe7a3dedbdac4cc4b20013e6a73826fa" title="HeyGen video player" frameBorder="0" allow="encrypted-media; fullscreen;" allowFullScreen />
+                            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/9tBSeyaDpd8" title="Video Prólogo – Bloque 3" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;" allowFullScreen />
                             <button onClick={() => setShowVideo(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(0,0,0,0.7)', border: '1px solid var(--border-glass)', color: '#fff', padding: '8px 16px', cursor: 'pointer', borderRadius: '8px' }}>Cerrar</button>
                         </div>
                     )}

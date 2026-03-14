@@ -147,7 +147,7 @@ export default function Block1Client({ user }) {
                                             </div>
                                         ) : (
                                             <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-                                                <iframe width="100%" height="100%" src="https://app.heygen.com/embeds/4758e3b2c50b4759b136c742da10d58d" title="Bienvenida al Bloque 1: Composición Arquitectónica" frameBorder="0" allow="encrypted-media; fullscreen;" allowFullScreen />
+                                                <iframe width="100%" height="100%" src="https://www.youtube.com/embed/pCj6Z9cdM1I" title="Video Prólogo – Bloque 1" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;" allowFullScreen />
                                                 <button onClick={() => setShowVideo(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(0,0,0,0.7)', border: '1px solid var(--border-glass)', color: '#fff', padding: '8px 16px', cursor: 'pointer', borderRadius: '8px' }}>Cerrar</button>
                                             </div>
                                         )}
