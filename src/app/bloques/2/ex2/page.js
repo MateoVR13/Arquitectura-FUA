@@ -34,7 +34,7 @@ export default function Exercise2Block2() {
         document.body.style.overflow = 'hidden';
 
         const handleMessage = async (event) => {
-            if (event.data && event.data.type === 'exercise-complete' && event.data.exercise === 'ex4_esqueleto') {
+            if (event.data && event.data.type === 'exercise-complete' && event.data.exercise === 'b2_ex2') {
                 setSaving(true);
                 try {
                     const res = await fetch('/api/progress', {
@@ -100,7 +100,7 @@ export default function Exercise2Block2() {
                     <FaHome />
                 </Link>
                 <iframe
-                    src="/exercises/ex4_esqueleto/index.html"
+                    src="/exercises/b2_structural/index.html"
                     style={{ width: '100%', height: '100%', border: 'none' }}
                     title="Ejercicio 2: El Esqueleto Racional"
                 />

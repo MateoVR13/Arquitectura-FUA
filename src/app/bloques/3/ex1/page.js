@@ -36,7 +36,7 @@ export default function Exercise1Block3() {
         document.body.style.overflow = 'hidden';
 
         const handleMessage = (event) => {
-            if (event.data && event.data.type === 'exercise-complete' && event.data.exercise === 'ex5_orden') {
+            if (event.data && event.data.type === 'exercise-complete' && event.data.exercise === 'b3_ex1') {
                 router.push('/bloques/3/ex2');
             }
         };
@@ -63,7 +63,7 @@ export default function Exercise1Block3() {
                     <FaHome />
                 </Link>
                 <iframe
-                    src="/exercises/ex5_orden/index.html"
+                    src="/exercises/b3_archaeology/index.html"
                     style={{ width: '100%', height: '100%', border: 'none' }}
                     title="Ejercicio 1: El Paso al Orden"
                 />

@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Structural Lab 3D — Simulador de Sistemas Estructurales</title>
+<meta name="description" content="Simulador educativo interactivo 3D: construye, simula y arriostras una estructura arquitectónica paso a paso.">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#1A2403;--bg2:#0d1302;--lime:#C8FF01;--yellow:#FFCE00;--teal:#00A4B5;
+  --gray:#606060;--light:#F5F5F5;--red:#ff4444;--orange:#ff8c00;
+  --glass:rgba(20,20,20,0.6);--glass-border:rgba(255,255,255,0.08);
+  --panel-w:280px;--bottom-h:90px;
+}
+body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--light);overflow:hidden;height:100vh;width:100vw}
+h1,h2,h3{font-weight:700}
+
+/* LAYOUT */
+#app{display:grid;grid-template-columns:var(--panel-w) 1fr var(--panel-w);grid-template-rows:1fr var(--bottom-h);height:100vh;width:100vw}
+#left-panel{grid-row:1/2;grid-column:1;background:var(--glass);backdrop-filter:blur(14px);border-right:1px solid var(--glass-border);display:flex;flex-direction:column;z-index:10;overflow-y:auto}
+#viewport{grid-row:1/2;grid-column:2;position:relative;overflow:hidden}
+#viewport canvas{width:100%!important;height:100%!important;display:block}
+#right-panel{grid-row:1/2;grid-column:3;background:var(--glass);backdrop-filter:blur(14px);border-left:1px solid var(--glass-border);display:flex;flex-direction:column;padding:16px;gap:12px;z-index:10;overflow-y:auto}
+#bottom-bar{grid-row:2;grid-column:1/4;background:rgba(10,10,10,0.7);backdrop-filter:blur(10px);border-top:1px solid var(--glass-border);display:flex;align-items:center;justify-content:space-around;padding:10px 24px;z-index:10;opacity:0.3;transition:opacity .5s}
+#bottom-bar.active{opacity:1}
+
+/* HEADER */
+.panel-header{text-align:center;padding:16px;border-bottom:1px solid var(--glass-border)}
+.panel-header h2{font-size:.8rem;text-transform:uppercase;letter-spacing:3px;color:var(--lime);text-shadow:0 0 10px rgba(200,255,1,.3)}
+.panel-header .subtitle{font-size:.6rem;color:var(--gray);margin-top:2px;letter-spacing:1px}
+
+/* PHASE STEPS */
+.phase{border-bottom:1px solid var(--glass-border);overflow:hidden;transition:all .4s}
+.phase-header{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:default;transition:background .3s}
+.phase-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;border:2px solid var(--gray);color:var(--gray);transition:all .4s;flex-shrink:0}
+.phase-title{font-size:.75rem;font-weight:600;color:var(--gray);transition:color .3s;flex:1}
+.phase-check{font-size:.8rem;color:var(--lime);opacity:0;transition:opacity .3s}
+.phase.completed .phase-num{border-color:var(--lime);background:var(--lime);color:var(--bg)}
+.phase.completed .phase-title{color:rgba(255,255,255,.5)}
+.phase.completed .phase-check{opacity:1}
+.phase.active .phase-num{border-color:var(--lime);color:var(--lime);box-shadow:0 0 10px rgba(200,255,1,.3);animation:pulse-num 2s infinite}
+.phase.active .phase-title{color:var(--light)}
+.phase.active .phase-header{background:rgba(200,255,1,.04)}
+@keyframes pulse-num{0%,100%{box-shadow:0 0 8px rgba(200,255,1,.2)}50%{box-shadow:0 0 16px rgba(200,255,1,.4)}}
+
+.phase-body{max-height:0;opacity:0;transition:max-height .4s,opacity .3s,padding .3s;padding:0 16px}
+.phase.active .phase-body{max-height:400px;opacity:1;padding:0 16px 16px}
+.phase-desc{font-size:.72rem;color:rgba(255,255,255,.6);line-height:1.6;margin-bottom:12px}
+
+/* PHASE CONTROLS */
+.phase-btn{width:100%;padding:12px;border:none;border-radius:10px;cursor:pointer;font-family:inherit;font-weight:700;font-size:.78rem;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:8px}
+.phase-btn:disabled{opacity:.3;cursor:not-allowed;transform:none!important}
+.btn-lime{background:var(--lime);color:var(--bg)}
+.btn-lime:hover:not(:disabled){transform:scale(1.03);box-shadow:0 0 20px rgba(200,255,1,.3)}
+.btn-red{background:linear-gradient(135deg,#ff4444,#cc0000);color:#fff}
+.btn-red:hover:not(:disabled){transform:scale(1.03);box-shadow:0 0 20px rgba(255,68,68,.3)}
+.btn-red.simulating{animation:pulse-red 1s infinite}
+.btn-outline{background:transparent;border:1px solid var(--glass-border);color:var(--light)}
+.btn-outline:hover:not(:disabled){background:rgba(255,255,255,.06)}
+@keyframes pulse-red{0%,100%{box-shadow:0 0 10px rgba(255,68,68,.3)}50%{box-shadow:0 0 25px rgba(255,68,68,.5)}}
+
+.slider-group{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.slider-group label{font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--gray)}
+.slider-group input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;background:rgba(255,255,255,.1);border-radius:3px;outline:none}
+.slider-group input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:var(--lime);cursor:pointer;box-shadow:0 0 8px rgba(200,255,1,.4)}
+
+.col-counter{text-align:center;font-size:.8rem;font-weight:600;color:var(--lime);padding:8px 0}
+
+/* WIND DIRECTION */
+.wind-selector{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr;width:120px;height:120px;margin:0 auto 12px;gap:2px}
+.wind-btn{border:1px solid var(--glass-border);border-radius:8px;background:rgba(255,255,255,.04);color:var(--gray);cursor:pointer;font-size:1rem;transition:all .25s;display:flex;align-items:center;justify-content:center}
+.wind-btn:hover{background:rgba(200,255,1,.08);border-color:rgba(200,255,1,.2)}
+.wind-btn.selected{background:rgba(200,255,1,.15);border-color:var(--lime);color:var(--lime);box-shadow:0 0 10px rgba(200,255,1,.2)}
+.wind-center{border:none;background:transparent;cursor:default;font-size:.55rem;color:var(--gray);text-transform:uppercase;letter-spacing:1px}
+
+/* CONCEPT CARDS */
+.concept-card{padding:12px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--glass-border);transition:all .4s}
+.concept-card.active{border-color:var(--lime);background:rgba(200,255,1,.06);box-shadow:0 0 12px rgba(200,255,1,.1)}
+.concept-card.hidden{display:none}
+.concept-card h3{font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--lime);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.concept-card p{font-size:.68rem;line-height:1.55;color:rgba(255,255,255,.6)}
+.concept-card .concept-icon{font-size:.9rem}
+
+/* BOTTOM INDICATORS */
+.indicator{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.indicator-label{font-size:.6rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--gray)}
+.indicator-bar-wrap{width:100%;max-width:140px;height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
+.indicator-bar{height:100%;border-radius:3px;transition:width .8s ease,background .6s ease;width:0%}
+.indicator-value{font-size:.85rem;font-weight:700}
+.stability-badge{padding:6px 18px;border-radius:20px;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;border:1px solid var(--glass-border);transition:all .5s}
+.stability-badge.unstable{color:var(--red);border-color:var(--red);text-shadow:0 0 8px rgba(255,68,68,.4)}
+.stability-badge.functional{color:var(--yellow);border-color:var(--yellow);text-shadow:0 0 8px rgba(255,206,0,.4)}
+.stability-badge.optimized{color:var(--lime);border-color:var(--lime);text-shadow:0 0 8px rgba(200,255,1,.4)}
+
+/* TOAST */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--lime);border-radius:12px;padding:14px 24px;z-index:1000;display:flex;align-items:center;gap:12px;max-width:520px;transition:transform .5s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast i{color:var(--lime);font-size:1.2rem}
+.toast-text{font-size:.78rem;line-height:1.4}
+.toast-text strong{color:var(--lime)}
+
+/* MODE INDICATOR */
+.mode-indicator{position:absolute;top:12px;left:50%;transform:translateX(-50%);background:var(--glass);backdrop-filter:blur(10px);border:1px solid var(--glass-border);border-radius:8px;padding:6px 16px;font-size:.7rem;color:var(--lime);z-index:20;pointer-events:none;letter-spacing:1px}
+#viewport.placing{cursor:crosshair}
+
+/* VICTORY OVERLAY */
+#victory-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:600;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .5s}
+#victory-overlay.show{opacity:1;pointer-events:all}
+.victory-card{background:linear-gradient(145deg,rgba(26,36,3,.95),rgba(13,19,2,.95));backdrop-filter:blur(20px);border:2px solid var(--lime);border-radius:20px;padding:40px;max-width:480px;width:90%;text-align:center;transform:scale(.8);transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+#victory-overlay.show .victory-card{transform:scale(1)}
+.victory-icon{font-size:3rem;color:var(--lime);margin-bottom:16px;text-shadow:0 0 30px rgba(200,255,1,.5)}
+.victory-card h2{font-size:1.5rem;color:var(--lime);margin-bottom:12px;text-shadow:0 0 15px rgba(200,255,1,.3)}
+.victory-card p{font-size:.85rem;color:rgba(255,255,255,.7);line-height:1.7;margin-bottom:24px}
+.victory-btn{padding:12px 32px;border:none;border-radius:10px;background:var(--lime);color:var(--bg);font-family:inherit;font-weight:700;font-size:.85rem;cursor:pointer;transition:all .3s}
+.victory-btn:hover{transform:scale(1.05);box-shadow:0 0 25px rgba(200,255,1,.4)}
+
+/* INTRO OVERLAY */
+#intro-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:flex;align-items:center;justify-content:center;transition:opacity .5s}
+#intro-overlay.hidden{opacity:0;pointer-events:none}
+.intro-card{background:linear-gradient(145deg,rgba(26,36,3,.95),rgba(13,19,2,.95));backdrop-filter:blur(20px);border:1px solid var(--lime);border-radius:16px;padding:36px;max-width:460px;width:90%;text-align:center;transform:scale(.95);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+#intro-overlay:not(.hidden) .intro-card{transform:scale(1)}
+.intro-card h1{font-size:1.6rem;color:var(--lime);margin-bottom:6px;text-shadow:0 0 15px rgba(200,255,1,.3)}
+.intro-card .intro-sub{font-size:.7rem;color:var(--teal);text-transform:uppercase;letter-spacing:3px;margin-bottom:16px}
+.intro-card p{font-size:.82rem;color:rgba(255,255,255,.65);line-height:1.7;margin-bottom:24px}
+.intro-card ol{text-align:left;font-size:.75rem;color:rgba(255,255,255,.6);line-height:2;margin:0 auto 24px;max-width:320px;list-style:none;counter-reset:steps}
+.intro-card ol li{counter-increment:steps;display:flex;align-items:center;gap:10px}
+.intro-card ol li::before{content:counter(steps);width:22px;height:22px;border-radius:50%;border:1px solid var(--lime);color:var(--lime);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;flex-shrink:0}
+
+/* BRAND */
+.brand-footer{text-align:center;font-size:.55rem;color:var(--gray);padding:12px 16px;border-top:1px solid var(--glass-border);margin-top:auto}
+.brand-footer span{color:var(--lime);animation:glowPulse 3s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{text-shadow:0 0 5px rgba(200,255,1,.3)}50%{text-shadow:0 0 15px rgba(200,255,1,.6)}}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(200,255,1,.15);border-radius:2px}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- LEFT PANEL: PHASES -->
+  <div id="left-panel">
+    <div class="panel-header">
+      <h2>Structural Lab</h2>
+      <div class="subtitle">Simulador Guiado</div>
+    </div>
+
+    <!-- PHASE 1 -->
+    <div class="phase active" id="phase-1" data-phase="1">
+      <div class="phase-header">
+        <div class="phase-num">1</div>
+        <div class="phase-title">Activar Malla</div>
+        <i class="fas fa-check phase-check"></i>
+      </div>
+      <div class="phase-body">
+        <p class="phase-desc">Define el módulo estructural. La malla organiza dónde irán tus columnas.</p>
+        <div class="slider-group">
+          <label>Módulo: <strong id="grid-val">4</strong>m</label>
+          <input type="range" id="grid-size" min="2" max="8" value="4" step="1">
+        </div>
+        <button class="phase-btn btn-lime" id="btn-activate-grid">
+          <i class="fas fa-border-all"></i> Activar Malla
+        </button>
+      </div>
+    </div>
+
+    <!-- PHASE 2 -->
+    <div class="phase" id="phase-2" data-phase="2">
+      <div class="phase-header">
+        <div class="phase-num">2</div>
+        <div class="phase-title">Plantar Columnas</div>
+        <i class="fas fa-check phase-check"></i>
+      </div>
+      <div class="phase-body">
+        <p class="phase-desc">Haz clic en los nodos de la malla para colocar columnas. Necesitas mínimo 4 para formar un marco.</p>
+        <div class="col-counter"><i class="fas fa-arrows-up-down"></i> <span id="col-count">0</span> / 4 columnas</div>
+        <button class="phase-btn btn-lime" id="btn-columns-done" disabled>
+          <i class="fas fa-arrow-right"></i> Continuar
+        </button>
+      </div>
+    </div>
+
+    <!-- PHASE 3 -->
+    <div class="phase" id="phase-3" data-phase="3">
+      <div class="phase-header">
+        <div class="phase-num">3</div>
+        <div class="phase-title">Cerrar Marco</div>
+        <i class="fas fa-check phase-check"></i>
+      </div>
+      <div class="phase-body">
+        <p class="phase-desc">Un solo clic conecta todas las columnas con vigas, creando el sistema aporticado.</p>
+        <button class="phase-btn btn-lime" id="btn-close-frame">
+          <i class="fas fa-link"></i> Cerrar Marco
+        </button>
+      </div>
+    </div>
+
+    <!-- PHASE 4 -->
+    <div class="phase" id="phase-4" data-phase="4">
+      <div class="phase-header">
+        <div class="phase-num">4</div>
+        <div class="phase-title">Simular Empuje</div>
+        <i class="fas fa-check phase-check"></i>
+      </div>
+      <div class="phase-body">
+        <p class="phase-desc">Elige la dirección del viento y observa cómo tu estructura se deforma.</p>
+        <div class="wind-selector">
+          <div></div>
+          <button class="wind-btn" data-wind="0,0,-1" title="Norte"><i class="fas fa-arrow-up"></i></button>
+          <div></div>
+          <button class="wind-btn" data-wind="-1,0,0" title="Oeste"><i class="fas fa-arrow-left"></i></button>
+          <div class="wind-center">Viento</div>
+          <button class="wind-btn selected" data-wind="1,0,0" title="Este"><i class="fas fa-arrow-right"></i></button>
+          <div></div>
+          <button class="wind-btn" data-wind="0,0,1" title="Sur"><i class="fas fa-arrow-down"></i></button>
+          <div></div>
+        </div>
+        <button class="phase-btn btn-red" id="btn-simulate">
+          <i class="fas fa-wind"></i> Simular Viento
+        </button>
+      </div>
+    </div>
+
+    <!-- PHASE 5 -->
+    <div class="phase" id="phase-5" data-phase="5">
+      <div class="phase-header">
+        <div class="phase-num">5</div>
+        <div class="phase-title">Arriostrar</div>
+        <i class="fas fa-check phase-check"></i>
+      </div>
+      <div class="phase-body">
+        <p class="phase-desc">Haz clic en dos columnas para agregar un arriostramiento diagonal. Luego re-simula para verificar la estabilidad.</p>
+        <div class="col-counter" id="brace-count"><i class="fas fa-slash"></i> <span>0</span> arriostramientos</div>
+        <button class="phase-btn btn-red" id="btn-resimulate" style="margin-bottom:8px">
+          <i class="fas fa-wind"></i> Re-simular Viento
+        </button>
+        <button class="phase-btn btn-outline" id="btn-reset-deform">
+          <i class="fas fa-rotate-left"></i> Restablecer Posición
+        </button>
+      </div>
+    </div>
+
+    <div class="brand-footer">Developed by <span>YedaTech LATAM</span></div>
+  </div>
+
+  <!-- 3D VIEWPORT -->
+  <div id="viewport">
+    <div class="mode-indicator" id="mode-indicator">Bienvenido</div>
+  </div>
+
+  <!-- RIGHT PANEL: CONCEPTS -->
+  <div id="right-panel">
+    <div class="panel-header" style="padding:0 0 12px;border-bottom:1px solid var(--glass-border)">
+      <h2>Conceptos</h2>
+      <div class="subtitle">Panel Educativo</div>
+    </div>
+
+    <div class="concept-card active" id="concept-malla" data-phases="1">
+      <h3><i class="fas fa-border-all concept-icon"></i> Malla Estructural</h3>
+      <p>El sistema organizador invisible del edificio. Define la posición lógica de todos los apoyos. Sin malla, no hay orden.</p>
+    </div>
+    <div class="concept-card" id="concept-compresion" data-phases="2">
+      <h3><i class="fas fa-compress concept-icon"></i> Compresión (Carga Axial)</h3>
+      <p>Las columnas transmiten el peso verticalmente al suelo. Trabajan aplastándose — eso es compresión. Son fuertes en esta dirección.</p>
+    </div>
+    <div class="concept-card" id="concept-tectonica" data-phases="3">
+      <h3><i class="fas fa-building concept-icon"></i> Sistema Aporticado</h3>
+      <p>Columnas + vigas = marco rígido (pórtico). Es la unidad básica que crea espacio habitable. Pero solo resiste cargas verticales.</p>
+    </div>
+    <div class="concept-card" id="concept-empuje" data-phases="4">
+      <h3><i class="fas fa-wind concept-icon"></i> Empuje Lateral</h3>
+      <p>El viento empuja de lado. Sin elementos diagonales, la estructura se deforma como un paralelogramo. ¡Es débil ante fuerzas laterales!</p>
+    </div>
+    <div class="concept-card" id="concept-traccion" data-phases="5">
+      <h3><i class="fas fa-slash concept-icon"></i> Arriostramiento</h3>
+      <p>Los diagonales trabajan a tracción (se estiran) para resistir el empuje. Rigidizan el marco y convierten la estructura en estable. ¡Son la clave!</p>
+    </div>
+  </div>
+
+  <!-- BOTTOM BAR -->
+  <div id="bottom-bar">
+    <div class="indicator">
+      <span class="indicator-label">Carga Vertical</span>
+      <div class="indicator-bar-wrap"><div class="indicator-bar" id="bar-vertical"></div></div>
+      <span class="indicator-value" id="val-vertical">0%</span>
+    </div>
+    <div class="indicator">
+      <span class="indicator-label">Resistencia Lateral</span>
+      <div class="indicator-bar-wrap"><div class="indicator-bar" id="bar-lateral"></div></div>
+      <span class="indicator-value" id="val-lateral">0%</span>
+    </div>
+    <div class="indicator">
+      <span class="indicator-label">Continuidad</span>
+      <div class="indicator-bar-wrap"><div class="indicator-bar" id="bar-continuity"></div></div>
+      <span class="indicator-value" id="val-continuity">0%</span>
+    </div>
+    <div class="indicator">
+      <span class="indicator-label">Eficiencia</span>
+      <div class="indicator-bar-wrap"><div class="indicator-bar" id="bar-efficiency"></div></div>
+      <span class="indicator-value" id="val-efficiency">0%</span>
+    </div>
+    <div class="indicator">
+      <span class="indicator-label">Estabilidad</span>
+      <div class="stability-badge unstable" id="stability-badge">Inestable</div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fas fa-lightbulb"></i><div class="toast-text" id="toast-text"></div></div>
+
+<!-- INTRO OVERLAY -->
+<div id="intro-overlay">
+  <div class="intro-card">
+    <h1>Structural Lab 3D</h1>
+    <div class="intro-sub">Simulador de Sistemas Estructurales</div>
+    <p>Construye una estructura paso a paso y descubre cómo la ingeniería la hace resistente ante el viento.</p>
+    <ol>
+      <li>Activa la malla estructural</li>
+      <li>Planta columnas en los nodos</li>
+      <li>Cierra el marco con vigas</li>
+      <li>Simula el empuje del viento</li>
+      <li>Arriostras para estabilizar</li>
+    </ol>
+    <button class="victory-btn" id="btn-start"><i class="fas fa-play"></i> Comenzar</button>
+  </div>
+</div>
+
+<!-- VICTORY OVERLAY -->
+<div id="victory-overlay">
+  <div class="victory-card">
+    <div class="victory-icon"><i class="fas fa-trophy"></i></div>
+    <h2>¡Estructura Estabilizada!</h2>
+    <p>Tu estructura resistió el empuje lateral gracias al arriostramiento. Has aprendido cómo los diagonales transforman una estructura inestable en estable.</p>
+    <button class="victory-btn" id="btn-restart"><i class="fas fa-rotate-left"></i> Empezar de Nuevo</button>
+  </div>
+</div>
+
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ==================== STATE ====================
+const S = {
+  phase: 0, // 0=intro, 1-5=phases
+  columns: {}, elements: [], beams: [], braces: [],
+  gridSize: 4, gridBuilt: false,
+  windDir: new THREE.Vector3(1, 0, 0),
+  simulating: false, deformed: false,
+  braceStart: null,
+  colCount: 0, braceCount: 0
+};
+const COL_H = 6, COL_R = 0.4;
+
+// ==================== SCENE ====================
+const vp = document.getElementById('viewport');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0d1302);
+scene.fog = new THREE.Fog(0x0d1302, 80, 150);
+
+const camera = new THREE.PerspectiveCamera(50, vp.clientWidth / vp.clientHeight, 0.1, 200);
+camera.position.set(28, 22, 28);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(vp.clientWidth, vp.clientHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+vp.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.dampingFactor = 0.08;
+controls.maxPolarAngle = Math.PI / 2.05;
+controls.minDistance = 8; controls.maxDistance = 70;
+controls.target.set(0, 3, 0);
+
+// Lights
+scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+const dir = new THREE.DirectionalLight(0xfff5e6, 1.3);
+dir.position.set(18, 28, 12); dir.castShadow = true;
+dir.shadow.mapSize.set(2048, 2048);
+dir.shadow.camera.left = -35; dir.shadow.camera.right = 35;
+dir.shadow.camera.top = 35; dir.shadow.camera.bottom = -35;
+scene.add(dir);
+scene.add(new THREE.HemisphereLight(0xc8ff01, 0x1a2403, 0.15));
+
+// Ground
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(120, 120),
+  new THREE.MeshStandardMaterial({ color: 0x1a2403, roughness: 0.95 })
+);
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true;
+scene.add(ground);
+
+// Raycaster
+const ray = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+const gPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+
+// Materials
+const matCol = new THREE.MeshStandardMaterial({ color: 0x8899a6, roughness: 0.4, metalness: 0.6 });
+const matBeam = new THREE.MeshStandardMaterial({ color: 0x90caf9, roughness: 0.3, metalness: 0.3, emissive: 0x2255aa, emissiveIntensity: 0.15 });
+const matBrace = new THREE.MeshStandardMaterial({ color: 0xffa726, roughness: 0.4, metalness: 0.5 });
+const matGhost = new THREE.MeshBasicMaterial({ color: 0xc8ff01, transparent: true, opacity: 0.3, depthWrite: false });
+
+// ==================== GRID ====================
+let gridGroup = new THREE.Group();
+scene.add(gridGroup);
+
+function buildGrid() {
+  gridGroup.clear();
+  const gs = S.gridSize, divs = Math.floor(48 / gs);
+  const helper = new THREE.GridHelper(divs * gs, divs, 0x5a8a1a, 0x3a5a0a);
+  helper.position.y = 0.01;
+  gridGroup.add(helper);
+  const half = (divs * gs) / 2;
+  const dGeo = new THREE.SphereGeometry(0.12, 8, 8);
+  const dMat = new THREE.MeshBasicMaterial({ color: 0xc8ff01, transparent: true, opacity: 0.5 });
+  for (let x = -half; x <= half; x += gs) {
+    for (let z = -half; z <= half; z += gs) {
+      const d = new THREE.Mesh(dGeo, dMat);
+      d.position.set(x, 0.02, z);
+      d.userData.isNode = true;
+      gridGroup.add(d);
+    }
+  }
+  gridGroup.visible = false;
+}
+buildGrid();
+
+// ==================== HELPERS ====================
+function snap(v) {
+  const g = S.gridSize;
+  return new THREE.Vector3(Math.round(v.x / g) * g, 0, Math.round(v.z / g) * g);
+}
+function ck(p) { return `${p.x.toFixed(1)}_${p.z.toFixed(1)}`; }
+
+function showToast(html) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-text').innerHTML = html;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+function setMode(txt) { document.getElementById('mode-indicator').textContent = txt; }
+
+// ==================== PHASE SYSTEM ====================
+function setPhase(n) {
+  S.phase = n;
+  document.querySelectorAll('.phase').forEach(p => {
+    const pn = +p.dataset.phase;
+    p.classList.remove('active', 'completed');
+    if (pn < n) p.classList.add('completed');
+    else if (pn === n) p.classList.add('active');
+  });
+  // Update concepts
+  document.querySelectorAll('.concept-card').forEach(c => {
+    c.classList.remove('active');
+    const phases = c.dataset.phases;
+    if (phases && +phases === n) c.classList.add('active');
+  });
+  // Bottom bar active from phase 4
+  document.getElementById('bottom-bar').classList.toggle('active', n >= 4);
+  // Viewport cursor
+  vp.classList.toggle('placing', n === 2 || n === 5);
+  // Mode indicator
+  const modes = {
+    1: 'Fase 1 — Configura y activa la malla',
+    2: 'Fase 2 — Clic en los nodos para plantar columnas',
+    3: 'Fase 3 — Cierra el marco con un clic',
+    4: 'Fase 4 — Elige dirección y simula el viento',
+    5: 'Fase 5 — Clic en 2 columnas para arriostrar'
+  };
+  setMode(modes[n] || '');
+}
+
+// ==================== PHASE 1: GRID ====================
+document.getElementById('grid-size').addEventListener('input', e => {
+  S.gridSize = +e.target.value;
+  document.getElementById('grid-val').textContent = S.gridSize;
+  buildGrid();
+  if (S.gridBuilt) gridGroup.visible = true;
+});
+
+document.getElementById('btn-activate-grid').addEventListener('click', () => {
+  gridGroup.visible = true;
+  S.gridBuilt = true;
+  showToast('<strong>Malla activada</strong> — el orden estructural está definido.');
+  setPhase(2);
+});
+
+// ==================== PHASE 2: COLUMNS ====================
+let ghostCol = null;
+function removeGhost() { if (ghostCol) { scene.remove(ghostCol); ghostCol = null; } }
+function showGhost(pos) {
+  removeGhost();
+  ghostCol = new THREE.Mesh(new THREE.CylinderGeometry(COL_R, COL_R, COL_H, 16), matGhost);
+  ghostCol.position.set(pos.x, COL_H / 2, pos.z);
+  scene.add(ghostCol);
+}
+
+function addColumn(pos) {
+  const key = ck(pos);
+  if (S.columns[key]) return;
+  const mesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(COL_R, COL_R, COL_H, 16),
+    matCol.clone()
+  );
+  mesh.position.set(pos.x, COL_H / 2, pos.z);
+  mesh.castShadow = true;
+  mesh.userData = { type: 'column', gp: pos.clone(), key, origPos: new THREE.Vector3(pos.x, COL_H / 2, pos.z) };
+  scene.add(mesh);
+  S.columns[key] = mesh;
+  S.elements.push(mesh);
+  S.colCount++;
+  document.getElementById('col-count').textContent = S.colCount;
+  const btn = document.getElementById('btn-columns-done');
+  btn.disabled = S.colCount < 4;
+  showToast(`Columna ${S.colCount} colocada — <strong>carga axial:</strong> transmite peso al suelo.`);
+}
+
+document.getElementById('btn-columns-done').addEventListener('click', () => {
+  removeGhost();
+  showToast('<strong>Columnas listas</strong> — ahora cierra el marco.');
+  setPhase(3);
+});
+
+// ==================== PHASE 3: CLOSE FRAME ====================
+function closeFrame() {
+  const cols = Object.values(S.columns);
+  if (cols.length < 2) return;
+
+  const tol = 0.5; // tolerance for "same coordinate"
+  const connected = new Set();
+
+  // For each pair of columns: if they share same X or same Z (within tolerance),
+  // connect them if there's no other column between them on that axis.
+  const positions = cols.map(c => c.userData.gp.clone());
+  console.log('Column positions:', positions.map(p => `(${p.x}, ${p.z})`).join(', '));
+
+  // Find unique X values
+  const xVals = [...new Set(positions.map(p => Math.round(p.x)))];
+  // Find unique Z values
+  const zVals = [...new Set(positions.map(p => Math.round(p.z)))];
+
+  // Connect columns in each row (same Z, sorted by X)
+  zVals.forEach(z => {
+    const row = positions.filter(p => Math.abs(p.z - z) < tol).sort((a, b) => a.x - b.x);
+    for (let i = 0; i < row.length - 1; i++) {
+      const key = ck(row[i]) + '|' + ck(row[i + 1]);
+      if (!connected.has(key)) { connected.add(key); addBeam(row[i], row[i + 1]); }
+    }
+  });
+
+  // Connect columns in each column (same X, sorted by Z)
+  xVals.forEach(x => {
+    const col = positions.filter(p => Math.abs(p.x - x) < tol).sort((a, b) => a.z - b.z);
+    for (let i = 0; i < col.length - 1; i++) {
+      const key = ck(col[i]) + '|' + ck(col[i + 1]);
+      if (!connected.has(key)) { connected.add(key); addBeam(col[i], col[i + 1]); }
+    }
+  });
+
+  console.log('Beams created:', S.beams.length);
+  showToast('<strong>Marco cerrado</strong> — sistema aporticado creado. Pero aún es débil lateralmente...');
+  setTimeout(() => setPhase(4), 800);
+}
+
+function addBeam(p1, p2) {
+  const y = COL_H - 0.3;
+  const top1 = new THREE.Vector3(p1.x, y, p1.z);
+  const top2 = new THREE.Vector3(p2.x, y, p2.z);
+  const mid = new THREE.Vector3().addVectors(top1, top2).multiplyScalar(0.5);
+  const dir = new THREE.Vector3().subVectors(top2, top1);
+  const len = dir.length();
+  if (len < 0.1) return; // skip zero-length
+
+  // Create beam as a box stretched between two points
+  const geo = new THREE.BoxGeometry(0.5, 0.8, len);
+  const mesh = new THREE.Mesh(geo, matBeam.clone());
+  mesh.position.copy(mid);
+  mesh.lookAt(top2);
+  mesh.castShadow = true;
+  mesh.userData = { type: 'beam', p1: p1.clone(), p2: p2.clone(), origPos: mid.clone() };
+  scene.add(mesh);
+  S.beams.push(mesh);
+  S.elements.push(mesh);
+}
+
+document.getElementById('btn-close-frame').addEventListener('click', closeFrame);
+
+// ==================== PHASE 4: WIND SIMULATION ====================
+// Wind direction
+document.querySelectorAll('.wind-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.wind-btn').forEach(x => x.classList.remove('selected'));
+    b.classList.add('selected');
+    const [x, y, z] = b.dataset.wind.split(',').map(Number);
+    S.windDir.set(x, y, z);
+  });
+});
+
+function simulateWind(callback) {
+  if (S.simulating) return;
+  S.simulating = true;
+  document.getElementById('btn-simulate').classList.add('simulating');
+  if (document.getElementById('btn-resimulate'))
+    document.getElementById('btn-resimulate').classList.add('simulating');
+
+  // First reset positions
+  resetDeformation();
+
+  // Find braced column keys
+  const bracedKeys = new Set();
+  S.braces.forEach(b => {
+    bracedKeys.add(ck(b.userData.p1));
+    bracedKeys.add(ck(b.userData.p2));
+  });
+
+  const force = 2.5;
+  const wd = S.windDir.clone().normalize();
+  let frame = 0;
+  const rampUp = 50, hold = 40;
+  const total = rampUp + hold;
+
+  function tick() {
+    frame++;
+    const t = Math.min(frame / rampUp, 1);
+    const ease = t * t * (3 - 2 * t); // smoothstep
+    const sway = ease * force;
+
+    // Deform columns
+    Object.values(S.columns).forEach(col => {
+      const braced = bracedKeys.has(col.userData.key);
+      const f = braced ? 0.04 : 1.0;
+      const dx = wd.x * sway * f;
+      const dz = wd.z * sway * f;
+
+      // Top leans more than base — rotation
+      col.position.x = col.userData.origPos.x + dx * 0.35;
+      col.position.z = col.userData.origPos.z + dz * 0.35;
+      col.rotation.z = -wd.x * sway * f * 0.05;
+      col.rotation.x = wd.z * sway * f * 0.05;
+
+      // Stress coloring
+      const stress = Math.abs(sway * f) / force;
+      const r = Math.min(1, stress * 1.8);
+      const g = Math.max(0.15, 1 - stress * 1.5);
+      col.material.color.setRGB(r, g * 0.55, 0.1);
+      col.material.emissive.setRGB(r * 0.35, 0, 0);
+      col.material.emissiveIntensity = stress * 0.6;
+    });
+
+    // Deform beams
+    S.beams.forEach(bm => {
+      const k1 = ck(bm.userData.p1), k2 = ck(bm.userData.p2);
+      const b1 = bracedKeys.has(k1), b2 = bracedKeys.has(k2);
+      const f = (b1 && b2) ? 0.04 : (b1 || b2) ? 0.5 : 1.0;
+      bm.position.x = bm.userData.origPos.x + wd.x * sway * f * 0.35;
+      bm.position.z = bm.userData.origPos.z + wd.z * sway * f * 0.35;
+    });
+
+    // Deform braces
+    S.braces.forEach(br => {
+      br.position.x = br.userData.origPos.x + wd.x * sway * 0.04 * 0.35;
+      br.position.z = br.userData.origPos.z + wd.z * sway * 0.04 * 0.35;
+    });
+
+    if (frame < total) {
+      requestAnimationFrame(tick);
+    } else {
+      S.simulating = false;
+      S.deformed = true;
+      document.getElementById('btn-simulate').classList.remove('simulating');
+      if (document.getElementById('btn-resimulate'))
+        document.getElementById('btn-resimulate').classList.remove('simulating');
+      recalcMetrics();
+      if (callback) callback();
+    }
+  }
+  tick();
+}
+
+function resetDeformation() {
+  S.deformed = false;
+  Object.values(S.columns).forEach(c => {
+    c.position.copy(c.userData.origPos);
+    c.rotation.set(0, 0, 0);
+    c.material.color.set(0x8899a6);
+    c.material.emissive.set(0x000000);
+    c.material.emissiveIntensity = 0;
+  });
+  S.beams.forEach(b => b.position.copy(b.userData.origPos));
+  S.braces.forEach(b => b.position.copy(b.userData.origPos));
+}
+
+document.getElementById('btn-simulate').addEventListener('click', () => {
+  simulateWind(() => {
+    showToast('<strong>¡Estructura deformada!</strong> — los marcos no resisten el empuje lateral. Necesitas arriostramientos.');
+    setTimeout(() => setPhase(5), 1200);
+  });
+});
+
+// ==================== PHASE 5: BRACING ====================
+function addBrace(p1, p2) {
+  const start = new THREE.Vector3(p1.x, 0.2, p1.z);
+  const end = new THREE.Vector3(p2.x, COL_H - 0.2, p2.z);
+  const d = new THREE.Vector3().subVectors(end, start);
+  const len = d.length();
+  const geo = new THREE.CylinderGeometry(0.1, 0.1, len, 10);
+  geo.translate(0, len / 2, 0);
+  geo.rotateX(Math.PI / 2);
+  const mesh = new THREE.Mesh(geo, matBrace.clone());
+  mesh.position.copy(start);
+  mesh.lookAt(end);
+  mesh.castShadow = true;
+  mesh.userData = { type: 'brace', p1: p1.clone(), p2: p2.clone(), origPos: start.clone() };
+  scene.add(mesh);
+  S.braces.push(mesh);
+  S.elements.push(mesh);
+  S.braceCount++;
+  document.querySelector('#brace-count span').textContent = S.braceCount;
+}
+
+document.getElementById('btn-resimulate').addEventListener('click', () => {
+  simulateWind(() => {
+    recalcMetrics();
+    const avg = (S.metrics.v + S.metrics.l + S.metrics.c + S.metrics.e) / 4;
+    if (avg >= 65) {
+      showToast('<strong>¡Estructura estable!</strong> — el arriostramiento funciona.');
+      setTimeout(() => {
+        document.getElementById('victory-overlay').classList.add('show');
+        setPhase(5);
+        document.querySelector('#phase-5').classList.add('completed');
+      }, 800);
+    } else {
+      showToast('Aún hay deformación. Agrega más arriostramientos y re-simula.');
+    }
+  });
+});
+
+document.getElementById('btn-reset-deform').addEventListener('click', () => {
+  resetDeformation();
+  recalcMetrics();
+  showToast('Posición restablecida — agrega arriostramientos y vuelve a simular.');
+});
+
+// ==================== METRICS ====================
+S.metrics = { v: 0, l: 0, c: 0, e: 0 };
+
+function recalcMetrics() {
+  const nCols = Object.keys(S.columns).length;
+  const nBeams = S.beams.length;
+  const nBraces = S.braces.length;
+  const total = nCols + nBeams + nBraces;
+  if (total === 0) { S.metrics = { v: 0, l: 0, c: 0, e: 0 }; updateBars(); return; }
+
+  const v = Math.min(100, nCols * 22);
+  const bays = nBeams;
+  const l = bays > 0 ? Math.min(100, (nBraces / Math.max(1, bays)) * 120) : 0;
+  const c = nCols > 1 ? Math.min(100, (nBeams / (nCols - 1)) * 85) : 0;
+  const stab = (v + l + c) / 3;
+  const e = Math.min(100, stab * (1 - (total > 40 ? 0.3 : 0)));
+  S.metrics = { v: Math.round(v), l: Math.round(l), c: Math.round(c), e: Math.round(e) };
+  updateBars();
+}
+
+function updateBars() {
+  const m = S.metrics;
+  const set = (id, val) => {
+    document.getElementById('bar-' + id).style.width = val + '%';
+    document.getElementById('bar-' + id).style.background = val > 70 ? '#C8FF01' : val > 40 ? '#FFCE00' : '#ff4444';
+    document.getElementById('val-' + id).textContent = val + '%';
+  };
+  set('vertical', m.v); set('lateral', m.l); set('continuity', m.c); set('efficiency', m.e);
+  const avg = (m.v + m.l + m.c + m.e) / 4;
+  const badge = document.getElementById('stability-badge');
+  badge.className = 'stability-badge';
+  if (avg >= 65) { badge.textContent = 'Optimizada'; badge.classList.add('optimized'); }
+  else if (avg >= 35) { badge.textContent = 'Funcional'; badge.classList.add('functional'); }
+  else { badge.textContent = 'Inestable'; badge.classList.add('unstable'); }
+}
+
+// ==================== MOUSE INTERACTION ====================
+function getGridPos(e) {
+  const r = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((e.clientX - r.left) / r.width) * 2 - 1;
+  mouse.y = -((e.clientY - r.top) / r.height) * 2 + 1;
+  ray.setFromCamera(mouse, camera);
+  const pt = new THREE.Vector3();
+  ray.ray.intersectPlane(gPlane, pt);
+  return pt ? snap(pt) : null;
+}
+
+function findColumn(e) {
+  const r = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((e.clientX - r.left) / r.width) * 2 - 1;
+  mouse.y = -((e.clientY - r.top) / r.height) * 2 + 1;
+  ray.setFromCamera(mouse, camera);
+  const cols = Object.values(S.columns);
+  const hits = ray.intersectObjects(cols, false);
+  return hits.length > 0 ? hits[0].object : null;
+}
+
+// Ghost on mousemove (phase 2)
+renderer.domElement.addEventListener('mousemove', e => {
+  if (S.phase === 2 && !S.simulating) {
+    const pos = getGridPos(e);
+    if (pos && !S.columns[ck(pos)]) showGhost(pos);
+    else removeGhost();
+  }
+});
+
+// Click handler
+renderer.domElement.addEventListener('click', e => {
+  if (S.simulating) return;
+
+  // Phase 2: place columns
+  if (S.phase === 2) {
+    const pos = getGridPos(e);
+    if (pos) { addColumn(pos); removeGhost(); }
+  }
+  // Phase 5: add braces
+  else if (S.phase === 5) {
+    const col = findColumn(e);
+    if (!col) return;
+    if (!S.braceStart) {
+      S.braceStart = col.userData.gp.clone();
+      col.material.emissive.set(0xc8ff01);
+      col.material.emissiveIntensity = 0.5;
+      showToast('Primera columna seleccionada — haz clic en otra para arriostrar.');
+    } else {
+      Object.values(S.columns).forEach(c => {
+        c.material.emissive.set(0x000000); c.material.emissiveIntensity = 0;
+      });
+      // Check not same column
+      if (ck(S.braceStart) !== ck(col.userData.gp)) {
+        // Check duplicate
+        const exists = S.braces.some(b =>
+          (ck(b.userData.p1) === ck(S.braceStart) && ck(b.userData.p2) === ck(col.userData.gp)) ||
+          (ck(b.userData.p1) === ck(col.userData.gp) && ck(b.userData.p2) === ck(S.braceStart))
+        );
+        if (!exists) {
+          // Reset deformation before adding
+          resetDeformation();
+          addBrace(S.braceStart, col.userData.gp);
+          showToast(`Arriostramiento ${S.braceCount} añadido — <strong>¡ahora re-simula!</strong>`);
+          recalcMetrics();
+        }
+      }
+      S.braceStart = null;
+    }
+  }
+});
+
+// ==================== INTRO / RESTART ====================
+document.getElementById('btn-start').addEventListener('click', () => {
+  document.getElementById('intro-overlay').classList.add('hidden');
+  setPhase(1);
+});
+
+document.getElementById('btn-restart').addEventListener('click', () => {
+  document.getElementById('victory-overlay').classList.remove('show');
+  // Clear everything
+  S.elements.forEach(el => scene.remove(el));
+  S.elements = []; S.columns = {}; S.beams = []; S.braces = [];
+  S.colCount = 0; S.braceCount = 0; S.deformed = false;
+  S.braceStart = null;
+  document.getElementById('col-count').textContent = '0';
+  document.querySelector('#brace-count span').textContent = '0';
+  document.getElementById('btn-columns-done').disabled = true;
+  S.gridBuilt = false;
+  gridGroup.visible = false;
+  buildGrid();
+  resetDeformation();
+  S.metrics = { v: 0, l: 0, c: 0, e: 0 };
+  updateBars();
+  setPhase(1);
+});
+
+// ==================== RESIZE ====================
+window.addEventListener('resize', () => {
+  camera.aspect = vp.clientWidth / vp.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(vp.clientWidth, vp.clientHeight);
+});
+
+// ==================== RENDER LOOP ====================
+(function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+})();
+</script>
+</body>
+</html>

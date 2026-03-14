@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Simulador de Gestión Urbana: Equilibrio de Ciudad — Experimenta decisiones urbanas y observa sus efectos en tiempo real.">
+    <title>Simulador de Gestión Urbana | Equilibrio de Ciudad</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+
+<body>
+
+    <!-- Background particles canvas (hidden in 3D mode) -->
+    <canvas id="bg-particles" style="display:none;"></canvas>
+
+    <!-- Floating geometric shapes -->
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="app-header" id="app-header">
+        <div class="header-left">
+            <div class="header-icon">
+                <i class="fas fa-city"></i>
+            </div>
+            <div class="header-text">
+                <h1>Equilibrio de Ciudad</h1>
+                <p class="header-subtitle">Simulador de Gestión Urbana</p>
+            </div>
+        </div>
+        <div class="header-center">
+            <div class="equilibrium-badge" id="equilibrium-badge">
+                <span class="badge-label">Estado Urbano</span>
+                <span class="badge-value" id="city-status">Ciudad Desequilibrada</span>
+                <div class="badge-score" id="global-score">32</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="btn-reset" id="btn-reset" title="Reiniciar simulación">
+                <i class="fas fa-redo-alt"></i>
+                <span>Reiniciar</span>
+            </button>
+            <button class="btn-help" id="btn-help" title="Tutorial">
+                <i class="fas fa-question-circle"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main 3-zone layout -->
+    <main class="simulator-layout" id="simulator-layout">
+
+        <!-- LEFT PANEL — Tool Palette -->
+        <aside class="panel panel-tools" id="panel-tools">
+            <div class="panel-header">
+                <i class="fas fa-tools"></i>
+                <h2>Herramientas Urbanas</h2>
+            </div>
+
+            <!-- Tool 1: Densificación -->
+            <div class="tool-section" id="tool-density">
+                <div class="tool-header" data-tool="density">
+                    <div class="tool-icon density-icon"><i class="fas fa-building"></i></div>
+                    <h3>Densificación</h3>
+                    <span class="tool-toggle"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="tool-body open">
+                    <p class="tool-desc">Controla la cantidad y altura de edificios en la manzana.</p>
+                    <div class="slider-group">
+                        <label>Cantidad de edificios</label>
+                        <div class="slider-row">
+                            <input type="range" id="slider-building-count" min="2" max="20" value="12"
+                                class="ua-slider">
+                            <span class="slider-value" id="val-building-count">12</span>
+                        </div>
+                    </div>
+                    <div class="slider-group">
+                        <label>Altura máxima (pisos)</label>
+                        <div class="slider-row">
+                            <input type="range" id="slider-building-height" min="1" max="15" value="10"
+                                class="ua-slider">
+                            <span class="slider-value" id="val-building-height">10</span>
+                        </div>
+                    </div>
+                    <div class="slider-group">
+                        <label>Ocupación del suelo</label>
+                        <div class="slider-row">
+                            <input type="range" id="slider-ground-occupation" min="10" max="95" value="75"
+                                class="ua-slider">
+                            <span class="slider-value" id="val-ground-occupation">75%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tool 2: Flujos -->
+            <div class="tool-section" id="tool-flows">
+                <div class="tool-header" data-tool="flows">
+                    <div class="tool-icon flows-icon"><i class="fas fa-route"></i></div>
+                    <h3>Flujos Urbanos</h3>
+                    <span class="tool-toggle"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="tool-body open">
+                    <p class="tool-desc">Reorganiza calles y prioriza la movilidad peatonal.</p>
+                    <div class="flow-controls">
+                        <button class="flow-btn active" id="btn-pedestrian" data-flow="pedestrian">
+                            <i class="fas fa-walking"></i>
+                            <span>Peatonal</span>
+                        </button>
+                        <button class="flow-btn" id="btn-mixed" data-flow="mixed">
+                            <i class="fas fa-car"></i>
+                            <span>Mixto</span>
+                        </button>
+                        <button class="flow-btn" id="btn-vehicular" data-flow="vehicular">
+                            <i class="fas fa-truck"></i>
+                            <span>Vehicular</span>
+                        </button>
+                    </div>
+                    <div class="slider-group">
+                        <label>Ancho de aceras</label>
+                        <div class="slider-row">
+                            <input type="range" id="slider-sidewalk" min="1" max="10" value="2" class="ua-slider">
+                            <span class="slider-value" id="val-sidewalk">2m</span>
+                        </div>
+                    </div>
+                    <div class="slider-group">
+                        <label>Conectividad vial</label>
+                        <div class="slider-row">
+                            <input type="range" id="slider-connectivity" min="1" max="10" value="3" class="ua-slider">
+                            <span class="slider-value" id="val-connectivity">3</span>
+                        </div>
+                    </div>
+                    <p class="tool-tip"><i class="fas fa-info-circle"></i> Haz clic en las calles del mapa para cambiar
+                        su dirección</p>
+                </div>
+            </div>
+
+            <!-- Tool 3: Límite Urbano -->
+            <div class="tool-section" id="tool-borders">
+                <div class="tool-header" data-tool="borders">
+                    <div class="tool-icon borders-icon"><i class="fas fa-tree"></i></div>
+                    <h3>Elementos Urbanos</h3>
+                    <span class="tool-toggle"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="tool-body open">
+                    <p class="tool-desc">Selecciona un elemento y haz clic en una casilla del mapa para colocarlo.</p>
+                    <div class="element-palette" id="element-palette">
+                        <div class="palette-item active" data-element="building" title="Edificio">
+                            <i class="fas fa-building"></i>
+                            <span>Edificio</span>
+                        </div>
+                        <div class="palette-item" data-element="park" title="Parque">
+                            <i class="fas fa-tree"></i>
+                            <span>Parque</span>
+                        </div>
+                        <div class="palette-item" data-element="plaza" title="Plaza">
+                            <i class="fas fa-landmark"></i>
+                            <span>Plaza</span>
+                        </div>
+                        <div class="palette-item" data-element="green-belt" title="Cinturón Verde">
+                            <i class="fas fa-leaf"></i>
+                            <span>C. Verde</span>
+                        </div>
+                        <div class="palette-item" data-element="water" title="Fuente de Agua">
+                            <i class="fas fa-water"></i>
+                            <span>Agua</span>
+                        </div>
+                        <div class="palette-item" data-element="empty" title="Vaciar casilla">
+                            <i class="fas fa-eraser"></i>
+                            <span>Vaciar</span>
+                        </div>
+                    </div>
+                    <p class="tool-tip"><i class="fas fa-mouse-pointer"></i> Selecciona arriba, luego haz clic en una
+                        casilla del mapa</p>
+                </div>
+            </div>
+
+            <!-- Tool 4: Escala Humana -->
+            <div class="tool-section" id="tool-scale">
+                <div class="tool-header" data-tool="scale">
+                    <div class="tool-icon scale-icon"><i class="fas fa-ruler-combined"></i></div>
+                    <h3>Escala Humana</h3>
+                    <span class="tool-toggle"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="tool-body open">
+                    <p class="tool-desc">Ajusta la relación altura/ancho para una experiencia peatonal cómoda.</p>
+                    <div class="scale-visual" id="scale-visual">
+                        <div class="scale-building" id="scale-building"></div>
+                        <div class="scale-street" id="scale-street">
+                            <i class="fas fa-person-walking"></i>
+                        </div>
+                        <div class="scale-building" id="scale-building-2"></div>
+                    </div>
+                    <div class="slider-group">
+                        <label>Proporción H/W</label>
+                        <div class="slider-row">
+                            <input type="range" id="slider-hw-ratio" min="5" max="40" value="30" class="ua-slider">
+                            <span class="slider-value" id="val-hw-ratio">3.0</span>
+                        </div>
+                    </div>
+                    <div class="scale-indicator" id="scale-indicator">
+                        <span class="scale-warning"><i class="fas fa-exclamation-triangle"></i> Fuera de escala
+                            humana</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tool 5: Espacio Público -->
+            <div class="tool-section" id="tool-public">
+                <div class="tool-header" data-tool="public">
+                    <div class="tool-icon public-icon"><i class="fas fa-users"></i></div>
+                    <h3>Espacio Público</h3>
+                    <span class="tool-toggle"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="tool-body open">
+                    <p class="tool-desc">Calidad evaluada automáticamente según tus intervenciones.</p>
+                    <div class="public-stats">
+                        <div class="stat-row">
+                            <span><i class="fas fa-tree"></i> Vegetación</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill" id="stat-vegetation" style="width: 10%"></div>
+                            </div>
+                            <span class="stat-val" id="val-vegetation">10%</span>
+                        </div>
+                        <div class="stat-row">
+                            <span><i class="fas fa-road"></i> Accesibilidad</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill" id="stat-accessibility" style="width: 20%"></div>
+                            </div>
+                            <span class="stat-val" id="val-accessibility">20%</span>
+                        </div>
+                        <div class="stat-row">
+                            <span><i class="fas fa-link"></i> Conectividad</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill" id="stat-connectivity" style="width: 15%"></div>
+                            </div>
+                            <span class="stat-val" id="val-connectivity-stat">15%</span>
+                        </div>
+                        <div class="stat-row">
+                            <span><i class="fas fa-person"></i> Escala</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill" id="stat-humanscale" style="width: 25%"></div>
+                            </div>
+                            <span class="stat-val" id="val-humanscale">25%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CENTER — Interactive Canvas Map -->
+        <section class="panel panel-map" id="panel-map">
+            <div class="canvas-container" id="canvas-container">
+                <canvas id="city-canvas"></canvas>
+                <div class="canvas-overlay" id="canvas-overlay">
+                    <div class="overlay-hint">
+                        <i class="fas fa-hand-pointer"></i>
+                        <span>Interactúa con el mapa: arrastra elementos y haz clic en las calles</span>
+                    </div>
+                </div>
+            </div>
+            <div class="map-legend" id="map-legend">
+                <span class="legend-item"><span class="legend-color" style="background:#5a7a3a"></span> Edificios</span>
+                <span class="legend-item"><span class="legend-color" style="background:#8B8B8B"></span> Calles</span>
+                <span class="legend-item"><span class="legend-color" style="background:#2ecc71"></span> Parques</span>
+                <span class="legend-item"><span class="legend-color" style="background:#e8d47a"></span> Plazas</span>
+                <span class="legend-item"><span class="legend-color" style="background:#3498db"></span> Agua</span>
+            </div>
+        </section>
+
+        <!-- RIGHT PANEL — Education & Index -->
+        <aside class="panel panel-education" id="panel-education">
+            <div class="panel-header">
+                <i class="fas fa-graduation-cap"></i>
+                <h2>Panel Educativo</h2>
+            </div>
+
+            <!-- Urban Equilibrium Index -->
+            <div class="index-section" id="index-section">
+                <h3 class="section-title"><i class="fas fa-chart-bar"></i> Índice de Equilibrio Urbano</h3>
+                <div class="index-gauges">
+                    <div class="gauge" id="gauge-density">
+                        <div class="gauge-ring">
+                            <svg viewBox="0 0 120 120">
+                                <circle class="gauge-bg" cx="60" cy="60" r="52"></circle>
+                                <circle class="gauge-fill" cx="60" cy="60" r="52" id="gauge-fill-density"></circle>
+                            </svg>
+                            <span class="gauge-value" id="gauge-val-density">25</span>
+                        </div>
+                        <span class="gauge-label">Densidad</span>
+                    </div>
+                    <div class="gauge" id="gauge-connectivity">
+                        <div class="gauge-ring">
+                            <svg viewBox="0 0 120 120">
+                                <circle class="gauge-bg" cx="60" cy="60" r="52"></circle>
+                                <circle class="gauge-fill" cx="60" cy="60" r="52" id="gauge-fill-connectivity"></circle>
+                            </svg>
+                            <span class="gauge-value" id="gauge-val-connectivity">30</span>
+                        </div>
+                        <span class="gauge-label">Conectividad</span>
+                    </div>
+                    <div class="gauge" id="gauge-public">
+                        <div class="gauge-ring">
+                            <svg viewBox="0 0 120 120">
+                                <circle class="gauge-bg" cx="60" cy="60" r="52"></circle>
+                                <circle class="gauge-fill" cx="60" cy="60" r="52" id="gauge-fill-public"></circle>
+                            </svg>
+                            <span class="gauge-value" id="gauge-val-public">15</span>
+                        </div>
+                        <span class="gauge-label">Espacio Público</span>
+                    </div>
+                    <div class="gauge" id="gauge-humanscale">
+                        <div class="gauge-ring">
+                            <svg viewBox="0 0 120 120">
+                                <circle class="gauge-bg" cx="60" cy="60" r="52"></circle>
+                                <circle class="gauge-fill" cx="60" cy="60" r="52" id="gauge-fill-humanscale"></circle>
+                            </svg>
+                            <span class="gauge-value" id="gauge-val-humanscale">40</span>
+                        </div>
+                        <span class="gauge-label">Escala Humana</span>
+                    </div>
+                    <div class="gauge" id="gauge-pedestrian">
+                        <div class="gauge-ring">
+                            <svg viewBox="0 0 120 120">
+                                <circle class="gauge-bg" cx="60" cy="60" r="52"></circle>
+                                <circle class="gauge-fill" cx="60" cy="60" r="52" id="gauge-fill-pedestrian"></circle>
+                            </svg>
+                            <span class="gauge-value" id="gauge-val-pedestrian">20</span>
+                        </div>
+                        <span class="gauge-label">Flujo Peatonal</span>
+                    </div>
+                </div>
+                <div class="index-result" id="index-result">
+                    <div class="result-bar">
+                        <div class="result-fill" id="result-fill"></div>
+                        <div class="result-marker" id="result-marker"></div>
+                    </div>
+                    <div class="result-labels">
+                        <span>Desequilibrada</span>
+                        <span>En transición</span>
+                        <span>Equilibrada</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Messages -->
+            <div class="feedback-section" id="feedback-section">
+                <h3 class="section-title"><i class="fas fa-comment-dots"></i> Retroalimentación</h3>
+                <div class="feedback-card" id="feedback-card">
+                    <p id="feedback-text">Bienvenido al simulador. Tu sector urbano presenta múltiples problemas: alta
+                        densidad, escasez de espacios verdes y pobre conectividad peatonal. ¡Utiliza las herramientas
+                        para restaurar el equilibrio!</p>
+                </div>
+            </div>
+
+            <!-- Educational Concepts -->
+            <div class="education-section" id="education-section">
+                <h3 class="section-title"><i class="fas fa-book-open"></i> Conceptos Urbanos</h3>
+
+                <div class="concept-card" id="concept-complex">
+                    <div class="concept-header" data-concept="complex">
+                        <i class="fas fa-project-diagram"></i>
+                        <span>Ciudad como Sistema Complejo</span>
+                        <i class="fas fa-chevron-down concept-toggle"></i>
+                    </div>
+                    <div class="concept-body">
+                        <p>Las ciudades no son solo edificios, sino <strong>relaciones, flujos y vacíos
+                                urbanos</strong>. Cada intervención que realices impacta múltiples dimensiones del
+                            sistema urbano simultáneamente.</p>
+                    </div>
+                </div>
+
+                <div class="concept-card" id="concept-methodology">
+                    <div class="concept-header" data-concept="methodology">
+                        <i class="fas fa-drafting-compass"></i>
+                        <span>Metodología de Diseño Urbano</span>
+                        <i class="fas fa-chevron-down concept-toggle"></i>
+                    </div>
+                    <div class="concept-body">
+                        <p>Tres elementos organizan el territorio:</p>
+                        <ul>
+                            <li><strong>Malla:</strong> La retícula de calles que define la accesibilidad</li>
+                            <li><strong>Eje:</strong> Las líneas directrices que organizan flujos</li>
+                            <li><strong>Plano:</strong> La distribución de usos y densidades</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="concept-card" id="concept-quality">
+                    <div class="concept-header" data-concept="quality">
+                        <i class="fas fa-award"></i>
+                        <span>Garantía de Calidad Urbana</span>
+                        <i class="fas fa-chevron-down concept-toggle"></i>
+                    </div>
+                    <div class="concept-body">
+                        <p>Se logra cuando existen:</p>
+                        <ul>
+                            <li>Espacios públicos accesibles</li>
+                            <li>Escala humana adecuada (relación H/W ≈ 1:1)</li>
+                            <li>Conectividad urbana fluida</li>
+                            <li>Equilibrio entre densidad y vacíos</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="concept-card" id="concept-density">
+                    <div class="concept-header" data-concept="density-concept">
+                        <i class="fas fa-th"></i>
+                        <span>Densidad Urbana</span>
+                        <i class="fas fa-chevron-down concept-toggle"></i>
+                    </div>
+                    <div class="concept-body">
+                        <p>La densidad equilibrada permite mayor <strong>actividad urbana</strong> sin sacrificar
+                            calidad de vida. Demasiada densidad genera congestión; muy poca genera dispersión y
+                            dependencia vehicular.</p>
+                    </div>
+                </div>
+
+                <div class="concept-card" id="concept-flows">
+                    <div class="concept-header" data-concept="flows-concept">
+                        <i class="fas fa-arrows-alt"></i>
+                        <span>Flujos Urbanos</span>
+                        <i class="fas fa-chevron-down concept-toggle"></i>
+                    </div>
+                    <div class="concept-body">
+                        <p>Los flujos determinan cómo las personas se mueven por la ciudad. Priorizar el <strong>flujo
+                                peatonal</strong> sobre el vehicular mejora la salud, seguridad y vitalidad del espacio
+                            urbano.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Glossary -->
+            <div class="glossary-section" id="glossary-section">
+                <h3 class="section-title"><i class="fas fa-spell-check"></i> Glosario</h3>
+                <div class="glossary-list">
+                    <div class="glossary-item">
+                        <strong>Manzana:</strong> Unidad urbana delimitada por calles.
+                    </div>
+                    <div class="glossary-item">
+                        <strong>Ocupación del suelo:</strong> Porcentaje de la manzana cubierto por construcciones.
+                    </div>
+                    <div class="glossary-item">
+                        <strong>Escala humana:</strong> Relación proporcional entre la altura de edificios y el ancho de
+                        calles.
+                    </div>
+                    <div class="glossary-item">
+                        <strong>Cinturón verde:</strong> Franja de vegetación que contiene la expansión urbana.
+                    </div>
+                    <div class="glossary-item">
+                        <strong>Conectividad:</strong> Grado de interconexión entre nodos urbanos.
+                    </div>
+                    <div class="glossary-item">
+                        <strong>Flujo peatonal:</strong> Movimiento de personas a pie por la trama urbana.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="panel-footer">
+                <span class="footer-brand">Developed by <span class="brand-glow">YedaTech LATAM</span></span>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Tutorial modal -->
+    <div class="modal-overlay" id="tutorial-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-graduation-cap"></i> Bienvenido al Simulador</h2>
+                <button class="modal-close" id="modal-close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="tutorial-steps">
+                    <div class="tutorial-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Observa el problema</h3>
+                            <p>El sector urbano presenta alta densidad, falta de espacios verdes y conectividad
+                                deficiente.</p>
+                        </div>
+                    </div>
+                    <div class="tutorial-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Usa las herramientas</h3>
+                            <p>Ajusta sliders de densidad y escala. Arrastra parques y plazas al mapa. Configura los
+                                flujos urbanos.</p>
+                        </div>
+                    </div>
+                    <div class="tutorial-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Observa el impacto</h3>
+                            <p>Los indicadores del Índice de Equilibrio se actualizan en tiempo real con cada cambio.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="tutorial-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3>Alcanza el equilibrio</h3>
+                            <p>Tu objetivo es lograr una "Ciudad Equilibrada" optimizando todos los indicadores.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-start" id="btn-start-sim"><i class="fas fa-play"></i> Comenzar Simulación</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

@@ -34,7 +34,7 @@ export default function Exercise2Block3() {
         document.body.style.overflow = 'hidden';
 
         const handleMessage = async (event) => {
-            if (event.data && event.data.type === 'exercise-complete' && event.data.exercise === 'ex6_gotico') {
+            if (event.data && event.data.type === 'exercise-complete' && event.data.exercise === 'b3_ex2') {
                 setSaving(true);
                 try {
                     const res = await fetch('/api/progress', {
@@ -100,7 +100,7 @@ export default function Exercise2Block3() {
                     <FaHome />
                 </Link>
                 <iframe
-                    src="/exercises/ex6_gotico/index.html"
+                    src="/exercises/b3_gotico/index.html"
                     style={{ width: '100%', height: '100%', border: 'none' }}
                     title="Ejercicio 2: El Desafío de la Luz"
                 />

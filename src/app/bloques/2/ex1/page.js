@@ -36,7 +36,7 @@ export default function Exercise1Block2() {
         document.body.style.overflow = 'hidden';
 
         const handleMessage = (event) => {
-            if (event.data && event.data.type === 'exercise-complete' && event.data.exercise === 'ex3_vano') {
+            if (event.data && event.data.type === 'exercise-complete' && event.data.exercise === 'b2_ex1') {
                 router.push('/bloques/2/ex2');
             }
         };
@@ -63,7 +63,7 @@ export default function Exercise1Block2() {
                     <FaHome />
                 </Link>
                 <iframe
-                    src="/exercises/ex3_vano/index.html"
+                    src="/exercises/b2_beamlab/index.html"
                     style={{ width: '100%', height: '100%', border: 'none' }}
                     title="Ejercicio 1: El Reto del Vano"
                 />

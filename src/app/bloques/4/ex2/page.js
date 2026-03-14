@@ -34,7 +34,7 @@ export default function Exercise2Block4() {
         document.body.style.overflow = 'hidden';
 
         const handleMessage = async (event) => {
-            if (event.data && event.data.type === 'exercise-complete' && event.data.exercise === 'ex8_ciudadano') {
+            if (event.data && event.data.type === 'exercise-complete' && event.data.exercise === 'b4_ex2') {
                 setSaving(true);
                 try {
                     const res = await fetch('/api/progress', {
@@ -100,7 +100,7 @@ export default function Exercise2Block4() {
                     <FaHome />
                 </Link>
                 <iframe
-                    src="/exercises/ex8_ciudadano/index.html"
+                    src="/exercises/b4_urbanblock/index.html"
                     style={{ width: '100%', height: '100%', border: 'none' }}
                     title="Ejercicio 2: El Espacio para el Ciudadano"
                 />

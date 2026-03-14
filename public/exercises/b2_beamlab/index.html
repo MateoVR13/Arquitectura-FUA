@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BeamLab 3D — Simulador de Vigas y Resistencia</title>
+  <meta name="description" content="Simulador educativo interactivo 3D de vigas estructurales. Experimenta con materiales, secciones y vanos para comprender la resistencia de materiales." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ===== TUTORIAL: Welcome Splash ===== -->
+<div id="tutorial-splash">
+  <div class="splash-card">
+    <div class="splash-icon">🏗️</div>
+    <h2>Bienvenido a <span class="splash-brand">BeamLab 3D</span></h2>
+    <p class="splash-desc">Tu misión: diseñar una viga estructural que soporte cargas sin fallar. Te guiaremos paso a paso por el proceso de diseño.</p>
+    <div class="splash-steps-preview">
+      <div class="sp-step"><span class="sp-num">1</span> Definir los Apoyos</div>
+      <div class="sp-step"><span class="sp-num">2</span> Seleccionar Material</div>
+      <div class="sp-step"><span class="sp-num">3</span> Trazar la Viga</div>
+      <div class="sp-step"><span class="sp-num">4</span> Aumentar Distancia</div>
+      <div class="sp-step"><span class="sp-num">5</span> Ajustar el Canto</div>
+    </div>
+    <button id="start-tutorial-btn" class="splash-btn">🚀 Comenzar Misión</button>
+  </div>
+</div>
+
+<!-- ===== TUTORIAL: Concept Window Popup ===== -->
+<div id="concept-window" class="concept-window hidden">
+  <div class="concept-header">
+    <span class="concept-icon" id="concept-icon">📘</span>
+    <span class="concept-title" id="concept-title">Fundamento Teórico</span>
+    <button class="concept-close" id="concept-close">✕</button>
+  </div>
+  <div class="concept-body" id="concept-body">
+    <p>Contenido teórico...</p>
+  </div>
+  <button class="concept-next-btn" id="concept-next-btn">Siguiente Paso →</button>
+</div>
+
+<div id="app" class="tutorial-locked">
+
+  <!-- ===== LEFT PANEL — Design Tools ===== -->
+  <div id="left-panel" class="panel">
+    <div class="panel-title"><span class="icon">🔧</span> Herramientas</div>
+
+    <!-- Span (Vano) -->
+    <div class="control-group" id="cg-span">
+      <div class="section-title">Distancia entre Apoyos (Vano)</div>
+      <label>Longitud <span class="value" id="span-val">6.0 m</span></label>
+      <input type="range" id="span-slider" min="2" max="14" step="0.5" value="6" />
+    </div>
+
+    <!-- Material -->
+    <div class="control-group" id="cg-material">
+      <div class="section-title">Material Estructural</div>
+      <div class="material-grid">
+        <button class="material-btn" data-mat="wood">
+          <span class="mat-icon">🪵</span>
+          Madera
+        </button>
+        <button class="material-btn active" data-mat="steel">
+          <span class="mat-icon">🔩</span>
+          Acero
+        </button>
+        <button class="material-btn" data-mat="concrete">
+          <span class="mat-icon">🧱</span>
+          Concreto
+        </button>
+      </div>
+    </div>
+
+    <!-- Cross-section height -->
+    <div class="control-group" id="cg-section">
+      <div class="section-title">Sección Transversal</div>
+      <label>Canto (h) <span class="value" id="height-val">0.40 m</span></label>
+      <input type="range" id="height-slider" min="0.10" max="1.0" step="0.02" value="0.40" />
+      <label>Ancho (b) <span class="value" id="width-val">0.25 m</span></label>
+      <input type="range" id="width-slider" min="0.10" max="0.60" step="0.02" value="0.25" />
+      <div class="cross-section-preview">
+        <canvas id="section-canvas" width="100" height="100"></canvas>
+      </div>
+    </div>
+
+    <!-- Load -->
+    <div class="control-group" id="cg-load">
+      <div class="section-title">Carga Distribuida</div>
+      <label>Carga <span class="value" id="load-val">20 kN/m</span></label>
+      <input type="range" id="load-slider" min="1" max="100" step="1" value="20" />
+      <div class="load-display">
+        <div class="load-value" id="load-big">20</div>
+        <div class="load-unit">kN/m</div>
+      </div>
+    </div>
+
+    <!-- Material Properties Table -->
+    <div class="control-group">
+      <div class="section-title">Propiedades del Material</div>
+      <table class="prop-table" id="mat-props-table">
+        <tr><th>Propiedad</th><th>Valor</th></tr>
+        <tr><td>Módulo E</td><td id="prop-e">200 GPa</td></tr>
+        <tr><td>σ yield</td><td id="prop-yield">250 MPa</td></tr>
+        <tr><td>Tracción</td><td id="prop-tension">Alta</td></tr>
+        <tr><td>Compresión</td><td id="prop-compression">Alta</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== CENTER — 3D Canvas ===== -->
+  <div id="center-panel">
+    <div class="header-overlay">
+      <h1>BeamLab 3D</h1>
+      <p>Simulador de Vigas y Resistencia</p>
+    </div>
+    <canvas id="three-canvas"></canvas>
+
+    <!-- ===== TUTORIAL: Mission Checklist ===== -->
+    <div id="mission-panel" class="mission-panel hidden">
+      <div class="mission-header">
+        <span class="mission-icon">🎯</span>
+        <span class="mission-title">Tu Misión</span>
+      </div>
+      <div class="mission-steps">
+        <div class="mission-step" data-step="0" id="ms-0">
+          <span class="ms-check">○</span>
+          <span class="ms-label">Definir los Apoyos</span>
+        </div>
+        <div class="mission-step" data-step="1" id="ms-1">
+          <span class="ms-check">○</span>
+          <span class="ms-label">Seleccionar Material</span>
+        </div>
+        <div class="mission-step" data-step="2" id="ms-2">
+          <span class="ms-check">○</span>
+          <span class="ms-label">Trazar la Viga</span>
+        </div>
+        <div class="mission-step" data-step="3" id="ms-3">
+          <span class="ms-check">○</span>
+          <span class="ms-label">Aumentar Distancia</span>
+        </div>
+        <div class="mission-step" data-step="4" id="ms-4">
+          <span class="ms-check">○</span>
+          <span class="ms-label">Ajustar el Canto</span>
+        </div>
+      </div>
+      <div class="mission-hint" id="mission-hint">
+        <span class="hint-arrow">👈</span>
+        <span class="hint-text" id="hint-text">Haz clic en "Comenzar" para iniciar</span>
+      </div>
+    </div>
+
+    <!-- ===== TUTORIAL: Tutor Character ===== -->
+    <div id="tutor-bubble" class="tutor-bubble hidden">
+      <div class="tutor-avatar">🏛️</div>
+      <div class="tutor-content">
+        <div class="tutor-name">Arq. Mentor</div>
+        <p class="tutor-msg" id="tutor-msg">¡Hola! Soy tu tutor de estructuras.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RIGHT PANEL — Educational ===== -->
+  <div id="right-panel" class="panel">
+    <div class="panel-title"><span class="icon">📊</span> Análisis Estructural</div>
+
+    <div class="diagram-container">
+      <div class="section-title">Diagrama de Momento Flector</div>
+      <canvas id="moment-canvas"></canvas>
+    </div>
+
+    <div class="diagram-container">
+      <div class="section-title">Diagrama de Fuerza Cortante</div>
+      <canvas id="shear-canvas"></canvas>
+    </div>
+
+    <div class="theory-card" id="theory-active">
+      <h4>💡 Concepto Activo</h4>
+      <p id="theory-text">Modifica los controles para ver cómo cambia el comportamiento estructural de la viga en tiempo real.</p>
+    </div>
+
+    <div class="theory-card">
+      <h4>📐 Momento Flector</h4>
+      <p>Tendencia de la viga a curvarse bajo carga. A mayor vano y carga, mayor es el momento y la deformación.</p>
+    </div>
+
+    <div class="theory-card">
+      <h4>✂️ Fuerza Cortante</h4>
+      <p>Fuerza interna que intenta deslizar las secciones de la viga. Es máxima en los apoyos.</p>
+    </div>
+
+    <div class="theory-card">
+      <h4>📏 Inercia Estructural</h4>
+      <p>Resistencia geométrica de la sección. Aumentar el canto (h) incrementa la inercia cúbicamente: I = b·h³/12.</p>
+    </div>
+
+    <div class="theory-card">
+      <h4>⚠️ Pandeo</h4>
+      <p>Colapso por inestabilidad cuando los esfuerzos superan la capacidad del material. El concreto falla en tracción, la madera en ambos.</p>
+    </div>
+  </div>
+
+  <!-- ===== BOTTOM BAR — Indicators ===== -->
+  <div id="bottom-bar">
+    <div class="indicator-card">
+      <div class="ind-label">Deflexión Máx</div>
+      <div class="ind-value" id="ind-deflection">0.00</div>
+      <div class="ind-unit">mm</div>
+    </div>
+    <div class="indicator-card">
+      <div class="ind-label">Momento Máx</div>
+      <div class="ind-value" id="ind-moment">0.00</div>
+      <div class="ind-unit">kN·m</div>
+    </div>
+    <div class="indicator-card">
+      <div class="ind-label">Cortante Máx</div>
+      <div class="ind-value" id="ind-shear">0.00</div>
+      <div class="ind-unit">kN</div>
+    </div>
+    <div class="indicator-card">
+      <div class="ind-label">Esfuerzo σ</div>
+      <div class="ind-value" id="ind-stress">0.00</div>
+      <div class="ind-unit">MPa</div>
+    </div>
+    <div class="indicator-card">
+      <div class="ind-label">Eficiencia</div>
+      <div class="ind-value" id="ind-efficiency">0</div>
+      <div class="ind-unit">%</div>
+    </div>
+    <div class="status-badge optimized" id="status-badge">
+      <span id="status-icon">✅</span>
+      <span id="status-text">Optimizada</span>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

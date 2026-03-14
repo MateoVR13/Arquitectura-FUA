@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Simulador Arquitectónico 3D: La Revolución Gótica — Transforma una iglesia románica en una catedral gótica aplicando innovaciones arquitectónicas.">
+  <title>La Revolución Gótica — Simulador 3D</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <div>
+        <h1 id="app-title">La Revolución Gótica</h1>
+        <p class="subtitle">Simulador Arquitectónico 3D</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <button id="btn-tutor" class="tutor-toggle" title="Activar/desactivar tutor">Tutor</button>
+      <button id="btn-reset" title="Restaurar iglesia románica">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 1 3.1-6.8"/><polyline points="3 2 3 8 9 8"/></svg>
+        Reiniciar
+      </button>
+      <div id="building-state" class="state-badge">Iglesia Románica</div>
+    </div>
+  </header>
+
+  <!-- TUTORIAL: Welcome overlay -->
+  <div id="tutor-welcome" class="tutor-overlay">
+    <div class="tutor-modal">
+      <div class="tutor-modal-icon">🏰</div>
+      <h2>¡Bienvenido, Arquitecto!</h2>
+      <p>En esta experiencia vas a transformar una <strong>iglesia románica</strong> del siglo XII en una <strong>catedral gótica</strong>, aplicando las 4 innovaciones que revolucionaron la arquitectura medieval.</p>
+      <div class="tutor-mission-preview">
+        <div class="mission-step-preview"><span>① </span>Cambiar los arcos pesados por arcos ojivales ligeros</div>
+        <div class="mission-step-preview"><span>② </span>Sacar la estructura al exterior con arbotantes</div>
+        <div class="mission-step-preview"><span>③ </span>Abrir los muros para llenar el espacio de luz</div>
+        <div class="mission-step-preview"><span>④ </span>Elevar todo hacia el cielo</div>
+      </div>
+      <button id="btn-start-tutor" class="tutor-start-btn">Comenzar Transformación →</button>
+      <button id="btn-skip-tutor" class="tutor-skip-btn">Explorar libremente</button>
+    </div>
+  </div>
+
+  <!-- TUTORIAL: Step-by-step bar (pushes content down) -->
+  <div id="tutor-bar" class="tutor-bar hidden">
+    <div class="tutor-bar-inner">
+      <div class="tutor-content">
+        <div class="tutor-step-label">Paso <span id="tutor-step-num">1</span> de 5</div>
+        <div id="tutor-message" class="tutor-message">Texto del tutor</div>
+      </div>
+      <div class="tutor-actions">
+        <div class="tutor-dots" id="tutor-dots"></div>
+        <button id="btn-tutor-next" class="tutor-next-btn">Siguiente →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Layout -->
+  <main id="app-layout">
+    <!-- LEFT PANEL: Transformation Tools -->
+    <aside id="panel-left" class="panel glass-panel">
+      <h2 class="panel-title">Transformaciones</h2>
+
+      <!-- Tool 1: Change Arch -->
+      <div class="tool-card" id="tool-arch">
+        <div class="tool-header">
+          <span class="tool-number">01</span>
+          <h3>Cambiar el Arco</h3>
+        </div>
+        <p class="tool-desc">Sustituir arco de medio punto por arco ojival gótico.</p>
+        <div class="tool-controls">
+          <div class="toggle-group">
+            <button id="btn-arch-roman" class="toggle-btn active" data-arch="roman">
+              <svg viewBox="0 0 40 30" width="40" height="30"><path d="M5 28 Q5 5, 20 5 Q35 5, 35 28" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+              <span>Románico</span>
+            </button>
+            <button id="btn-arch-gothic" class="toggle-btn" data-arch="gothic">
+              <svg viewBox="0 0 40 30" width="40" height="30"><path d="M5 28 Q5 8, 20 2 Q35 8, 35 28" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+              <span>Ojival</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tool 2: Free the Wall -->
+      <div class="tool-card" id="tool-buttress">
+        <div class="tool-header">
+          <span class="tool-number">02</span>
+          <h3>Liberar el Muro</h3>
+        </div>
+        <p class="tool-desc">Mover masa estructural al exterior con arbotantes.</p>
+        <div class="tool-controls">
+          <label class="slider-label">
+            <span>Arbotantes</span>
+            <span id="buttress-val">0%</span>
+          </label>
+          <input type="range" id="slider-buttress" min="0" max="100" value="0" class="styled-slider">
+        </div>
+      </div>
+
+      <!-- Tool 3: Pierce the Boundary -->
+      <div class="tool-card" id="tool-windows">
+        <div class="tool-header">
+          <span class="tool-number">03</span>
+          <h3>Perforar el Límite</h3>
+        </div>
+        <p class="tool-desc">Abrir muros para vitrales y luz divina.</p>
+        <div class="tool-controls">
+          <label class="slider-label">
+            <span>Vitrales</span>
+            <span id="windows-val">0%</span>
+          </label>
+          <input type="range" id="slider-windows" min="0" max="100" value="0" class="styled-slider slider-stained">
+        </div>
+      </div>
+
+      <!-- Tool 4: Add Verticality -->
+      <div class="tool-card" id="tool-height">
+        <div class="tool-header">
+          <span class="tool-number">04</span>
+          <h3>Añadir Verticalidad</h3>
+        </div>
+        <p class="tool-desc">Elevar columnas y bóvedas para mayor ascensión.</p>
+        <div class="tool-controls">
+          <label class="slider-label">
+            <span>Altura</span>
+            <span id="height-val">0%</span>
+          </label>
+          <input type="range" id="slider-height" min="0" max="100" value="0" class="styled-slider slider-height">
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER: 3D Viewport -->
+    <section id="viewport">
+      <canvas id="three-canvas"></canvas>
+      <div id="viewport-hint">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l2 2"/></svg>
+        Arrastra para rotar · Scroll para zoom
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: Educational -->
+    <aside id="panel-right" class="panel glass-panel">
+      <h2 class="panel-title">Conceptos Clave</h2>
+
+      <div class="concept-accordion">
+        <details class="concept-item" open>
+          <summary>
+            <span class="concept-icon">◆</span>
+            Arco Apuntado
+          </summary>
+          <div class="concept-body">
+            <p>Innovación estructural que dirige las cargas de manera más vertical. Permite alcanzar <strong>mayor altura</strong> y <strong>ligereza estructural</strong> que el arco de medio punto románico.</p>
+            <div class="concept-highlight">Las cargas se transmiten verticalmente, reduciendo el empuje lateral.</div>
+          </div>
+        </details>
+
+        <details class="concept-item">
+          <summary>
+            <span class="concept-icon">◆</span>
+            Esqueleto Exterior
+          </summary>
+          <div class="concept-body">
+            <p>Sistema de <strong>arbotantes</strong> que transfiere las cargas fuera del muro. El muro deja de ser portante y la estructura se vuelve esquelética.</p>
+            <div class="concept-highlight">La masa se traslada al exterior, liberando el interior.</div>
+          </div>
+        </details>
+
+        <details class="concept-item">
+          <summary>
+            <span class="concept-icon">◆</span>
+            Luz Divina
+          </summary>
+          <div class="concept-body">
+            <p>Los <strong>vitrales</strong> transforman el espacio interior mediante la luz coloreada. La luz se convierte en un material constructivo del espacio espiritual.</p>
+            <div class="concept-highlight">La arquitectura gótica es una arquitectura de luz.</div>
+          </div>
+        </details>
+
+        <details class="concept-item">
+          <summary>
+            <span class="concept-icon">◆</span>
+            Continuidad Visual
+          </summary>
+          <div class="concept-body">
+            <p>Las líneas arquitectónicas <strong>dirigen la mirada hacia arriba</strong>. Columnas, nervaduras y arcos crean una continuidad desde el suelo hasta la bóveda.</p>
+            <div class="concept-highlight">Todo en el gótico apunta hacia el cielo.</div>
+          </div>
+        </details>
+      </div>
+
+      <div class="tutor-progress">
+        <h3 class="progress-title">Tu Misión</h3>
+        <div class="mission-checklist">
+          <div class="mission-item" id="mission-0">
+            <span class="mission-check">○</span>
+            <span class="mission-text">Observar la iglesia románica</span>
+          </div>
+          <div class="mission-item" id="mission-1">
+            <span class="mission-check">○</span>
+            <span class="mission-text">Cambiar a arcos ojivales</span>
+          </div>
+          <div class="mission-item" id="mission-2">
+            <span class="mission-check">○</span>
+            <span class="mission-text">Añadir arbotantes (≥60%)</span>
+          </div>
+          <div class="mission-item" id="mission-3">
+            <span class="mission-check">○</span>
+            <span class="mission-text">Abrir vitrales (≥60%)</span>
+          </div>
+          <div class="mission-item" id="mission-4">
+            <span class="mission-check">○</span>
+            <span class="mission-text">Elevar la catedral (≥50%)</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- BOTTOM BAR: Evaluation -->
+  <footer id="eval-bar">
+    <div class="eval-title">
+      <span>Índice de Transformación Gótica</span>
+      <span id="eval-total" class="eval-score">0%</span>
+    </div>
+    <div class="eval-gauges">
+      <div class="gauge" id="gauge-vert">
+        <div class="gauge-label">Verticalidad</div>
+        <div class="gauge-track"><div class="gauge-fill" id="fill-vert" style="width:0%"></div></div>
+        <div class="gauge-value" id="val-vert">0</div>
+      </div>
+      <div class="gauge" id="gauge-lum">
+        <div class="gauge-label">Luminosidad</div>
+        <div class="gauge-track"><div class="gauge-fill fill-lum" id="fill-lum" style="width:0%"></div></div>
+        <div class="gauge-value" id="val-lum">0</div>
+      </div>
+      <div class="gauge" id="gauge-struct">
+        <div class="gauge-label">Estructura Gótica</div>
+        <div class="gauge-track"><div class="gauge-fill fill-struct" id="fill-struct" style="width:0%"></div></div>
+        <div class="gauge-value" id="val-struct">0</div>
+      </div>
+      <div class="gauge" id="gauge-cont">
+        <div class="gauge-label">Continuidad</div>
+        <div class="gauge-track"><div class="gauge-fill fill-cont" id="fill-cont" style="width:0%"></div></div>
+        <div class="gauge-value" id="val-cont">0</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Three.js from CDN -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

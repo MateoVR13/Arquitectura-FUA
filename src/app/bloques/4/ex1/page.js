@@ -36,7 +36,7 @@ export default function Exercise1Block4() {
         document.body.style.overflow = 'hidden';
 
         const handleMessage = (event) => {
-            if (event.data && event.data.type === 'exercise-complete' && event.data.exercise === 'ex7_trama') {
+            if (event.data && event.data.type === 'exercise-complete' && event.data.exercise === 'b4_ex1') {
                 router.push('/bloques/4/ex2');
             }
         };
@@ -63,7 +63,7 @@ export default function Exercise1Block4() {
                     <FaHome />
                 </Link>
                 <iframe
-                    src="/exercises/ex7_trama/index.html"
+                    src="/exercises/b4_equilibrio/index.html"
                     style={{ width: '100%', height: '100%', border: 'none' }}
                     title="Ejercicio 1: La Trama y el Orden"
                 />

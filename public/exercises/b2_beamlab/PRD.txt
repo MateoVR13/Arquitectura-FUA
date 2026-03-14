@@ -1,0 +1,352 @@
+1. Información General
+
+Nombre del producto
+
+BeamLab 3D — Simulador de Vigas y Resistencia
+
+Tipo
+
+Simulador educativo interactivo 3D
+
+Plataforma
+
+Aplicación web en navegador
+
+Tecnología gráfica
+
+WebGL
+
+Usuarios objetivo
+
+estudiantes de arquitectura
+
+estudiantes de ingeniería civil
+
+cursos de estructuras
+
+docentes universitarios
+
+2. Objetivo del Producto
+Objetivo principal
+
+Permitir al usuario experimentar con vigas estructurales, comprendiendo cómo afectan:
+
+la distancia entre apoyos (vano)
+
+el material
+
+la sección transversal
+
+al comportamiento estructural.
+
+Objetivos educativos
+
+El simulador enseña:
+
+cómo se transmite la carga en una viga
+
+qué es deflexión
+
+diferencia entre compresión y tracción
+
+cómo influye la inercia de la sección
+
+cómo aumentar la resistencia estructural
+
+3. Concepto del Simulador
+
+El usuario recibe un problema estructural:
+
+cubrir un espacio con una viga entre dos apoyos.
+
+Debe experimentar con:
+
+posición de apoyos
+
+material
+
+longitud del vano
+
+sección estructural
+
+El simulador muestra en tiempo real:
+
+deformación
+
+momento flector
+
+esfuerzo cortante
+
+fallos estructurales
+
+4. Mundo 3D del Simulador
+Escenario
+
+Dos apoyos estructurales separados por una distancia variable.
+
+Entre ellos se coloca una viga estructural.
+
+Elementos 3D
+Apoyos
+
+Representan columnas o muros.
+
+Viga
+
+Elemento estructural principal.
+
+Cargas
+
+Simulación de peso aplicado.
+
+5. Mecánicas Principales
+5.1 Definir Apoyos
+
+El usuario coloca puntos de apoyo estructural.
+
+Concepto enseñado:
+
+Las cargas se transmiten a los apoyos.
+
+Interacción:
+
+arrastrar apoyos
+
+modificar distancia
+
+5.2 Seleccionar Material
+
+El usuario puede elegir material estructural.
+
+Opciones:
+
+madera
+
+acero
+
+concreto
+
+Cada material tiene propiedades diferentes:
+
+Material	Tracción	Compresión
+madera	media	media
+acero	alta	alta
+concreto	baja	alta
+5.3 Trazar la Viga
+
+El usuario dibuja una viga entre apoyos.
+
+Concepto enseñado:
+
+La viga convierte cargas horizontales en fuerzas verticales.
+
+5.4 Aumentar Distancia (Vano)
+
+El usuario incrementa la longitud.
+
+Impacto:
+
+aumenta la deflexión
+
+aumenta el momento flector
+
+Concepto enseñado:
+
+A mayor vano, mayor esfuerzo estructural.
+
+5.5 Ajustar Canto de la Viga
+
+El usuario modifica la altura de la sección.
+
+Impacto:
+
+mayor canto = mayor inercia
+
+mayor resistencia
+
+Concepto enseñado:
+
+La geometría influye más que la cantidad de material.
+
+6. Sistema de Simulación Física
+
+El simulador utiliza un modelo estructural simplificado.
+
+Variables calculadas
+Momento flector
+
+Curvatura de la viga bajo carga.
+
+Fuerza cortante
+
+Fuerza interna que intenta deslizar secciones.
+
+Deflexión
+
+Deformación vertical de la viga.
+
+Pandeo
+
+Posible colapso estructural.
+
+Representación visual
+
+El sistema muestra:
+
+curvatura de la viga
+
+diagramas estructurales
+
+7. Sistema de Evaluación
+
+El sistema calcula un Índice de Desempeño Estructural.
+
+Indicadores:
+
+deflexión máxima
+
+desplazamiento del centro de la viga.
+
+eficiencia estructural
+
+resistencia vs material usado.
+
+estabilidad
+
+probabilidad de colapso.
+
+Resultados posibles
+
+Estados:
+
+fallo estructural
+
+estructura funcional
+
+solución optimizada
+
+8. Interfaz del Usuario
+Layout principal
+Zona central
+
+Modelo estructural 3D.
+
+Panel izquierdo
+
+Herramientas de diseño:
+
+apoyos
+
+viga
+
+material
+
+sección
+
+Panel derecho
+
+Panel educativo.
+
+Incluye:
+
+gráficos estructurales
+
+explicación teórica
+
+Panel inferior
+
+Indicadores estructurales en tiempo real.
+
+9. Conceptos Educativos
+
+El simulador explica:
+
+Momento flector
+
+Tendencia de una viga a curvarse.
+
+Fuerza cortante
+
+Fuerza que intenta deslizar secciones internas.
+
+Inercia estructural
+
+Resistencia geométrica de una sección.
+
+Pandeo
+
+Colapso por inestabilidad.
+
+10. Requisitos Técnicos
+Motor 3D
+
+Recomendado:
+
+Three.js
+
+o
+
+Babylon.js
+
+Simulación física
+
+Se puede usar:
+
+Cannon.js
+
+o motor propio simplificado.
+
+Framework
+
+React
+
+Vue
+
+Formato de modelos
+
+GLTF / GLB.
+
+11. Recursos 3D Gratuitos
+
+Assets gratuitos posibles:
+
+Sketchfab
+
+Poly Pizza
+
+Kenney
+
+Quaternius
+
+12. Rendimiento
+
+Objetivos:
+
+60 FPS
+
+simulación con deformación en tiempo real
+
+carga inicial < 4 segundos
+
+13. Roadmap de Desarrollo
+Fase 1 — MVP
+
+viga básica
+
+apoyos
+
+deflexión visual
+
+Fase 2
+
+materiales estructurales
+
+gráficos de momento y cortante
+
+Fase 3
+
+simulación avanzada
+
+múltiples cargas
+
+escenarios reales
