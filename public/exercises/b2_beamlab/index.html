@@ -43,7 +43,12 @@
 
   <!-- ===== LEFT PANEL — Design Tools ===== -->
   <div id="left-panel" class="panel">
-    <div class="panel-title"><span class="icon">🔧</span> Herramientas</div>
+    <div class="panel-title" style="display:flex;align-items:center;gap:8px">
+      <button onclick="window.parent.location.href='/laboratorio'" title="Volver al Laboratorio" style="background:none;border:1px solid rgba(255,255,255,0.15);color:#fff;width:30px;height:30px;min-width:30px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:background 0.2s" onmouseover="this.style.background='rgba(200,255,1,0.1)'" onmouseout="this.style.background='none'">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>
+      </button>
+      <span><span class="icon">🔧</span> Herramientas</span>
+    </div>
 
     <!-- Span (Vano) -->
     <div class="control-group" id="cg-span">

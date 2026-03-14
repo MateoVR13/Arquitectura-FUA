@@ -2,8 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
-import { FaFingerprint, FaCrown, FaRedo, FaCheck, FaHome } from 'react-icons/fa';
+import { FaFingerprint, FaCrown, FaRedo, FaCheck } from 'react-icons/fa';
 import PageTransition from '@/components/PageTransition';
 import styles from './ex2.module.css';
 
@@ -202,17 +201,6 @@ export default function Exercise2() {
             <div className={styles.container}>
                 <canvas ref={canvasRef} className={styles.bgCanvas}></canvas>
 
-                <Link href="/laboratorio" style={{
-                    position: 'fixed', top: '20px', right: '20px', zIndex: 100,
-                    width: '44px', height: '44px', borderRadius: '50%',
-                    background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)',
-                    border: '1px solid rgba(255,255,255,0.15)', color: '#fff',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    cursor: 'pointer', fontSize: '1.1rem', textDecoration: 'none',
-                    transition: 'all 0.2s'
-                }} title="Volver al Laboratorio">
-                    <FaHome />
-                </Link>
 
                 <header className={styles.header}>
                     <div className={styles.title}><FaFingerprint /> Ejercicio 2</div>

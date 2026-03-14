@@ -1,19 +1,9 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { FaHome } from 'react-icons/fa';
 import PageTransition from '@/components/PageTransition';
 
-const homeBtnStyle = {
-    position: 'fixed', top: '20px', right: '20px', zIndex: 100,
-    width: '44px', height: '44px', borderRadius: '50%',
-    background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)',
-    border: '1px solid rgba(255,255,255,0.15)', color: '#fff',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    cursor: 'pointer', fontSize: '1.1rem', textDecoration: 'none',
-    transition: 'all 0.2s'
-};
+
 
 const modalOverlayStyle = {
     position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
@@ -62,9 +52,6 @@ export default function Exercise1() {
     return (
         <PageTransition>
             <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#1d2500', position: 'relative' }}>
-                <Link href="/laboratorio" style={homeBtnStyle} title="Volver al Laboratorio">
-                    <FaHome />
-                </Link>
 
                 <iframe
                     src="/exercises/ex1/index.html"
