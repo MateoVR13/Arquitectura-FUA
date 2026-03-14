@@ -37,7 +37,7 @@ export default function Exercise1Block2() {
 
         const handleMessage = (event) => {
             if (event.data && event.data.type === 'exercise-complete' && event.data.exercise === 'b2_ex1') {
-                router.push('/bloques/2/ex2');
+                setShowModal(true);
             }
         };
 
@@ -47,7 +47,7 @@ export default function Exercise1Block2() {
             document.body.style.overflow = '';
             window.removeEventListener('message', handleMessage);
         };
-    }, [router]);
+    }, []);
 
     return (
         <PageTransition>
@@ -74,14 +74,14 @@ export default function Exercise1Block2() {
                             <div style={{ fontSize: '3rem', marginBottom: '15px' }}>🏗️</div>
                             <div style={titleStyle}>¡Ejercicio 1 Completado!</div>
                             <div style={bodyStyle}>
-                                Has dominado el concepto de vano y flexión. Ahora avanzarás al <strong>Ejercicio 2: El Esqueleto Racional</strong>, donde construirás un sistema aporticado completo.
+                                ¡Has dominado el concepto de vano y flexión! Puedes seguir explorando el simulador en modo libre o volver al bloque para continuar.
                             </div>
                             <div>
                                 <button style={btnSecondaryStyle} onClick={() => setShowModal(false)}>
-                                    Seguir explorando
+                                    Seguir en modo libre
                                 </button>
-                                <button style={btnStyle} onClick={() => router.push('/bloques/2/ex2')}>
-                                    Continuar al Ejercicio 2
+                                <button style={btnStyle} onClick={() => router.push('/bloques/2')}>
+                                    Volver al Bloque
                                 </button>
                             </div>
                         </div>

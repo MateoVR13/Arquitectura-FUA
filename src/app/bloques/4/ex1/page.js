@@ -37,7 +37,7 @@ export default function Exercise1Block4() {
 
         const handleMessage = (event) => {
             if (event.data && event.data.type === 'exercise-complete' && event.data.exercise === 'b4_ex1') {
-                router.push('/bloques/4/ex2');
+                setShowModal(true);
             }
         };
 
@@ -47,7 +47,7 @@ export default function Exercise1Block4() {
             document.body.style.overflow = '';
             window.removeEventListener('message', handleMessage);
         };
-    }, [router]);
+    }, []);
 
     return (
         <PageTransition>
@@ -74,14 +74,14 @@ export default function Exercise1Block4() {
                             <div style={{ fontSize: '3rem', marginBottom: '15px' }}>🗺️</div>
                             <div style={titleStyle}>¡Ejercicio 1 Completado!</div>
                             <div style={bodyStyle}>
-                                Has comprendido cómo la malla urbana, la pauta central, los límites y la masa se articulan para crear un sector urbano legible y conectado. Ahora avanzarás al <strong>Ejercicio 2: El Espacio para el Ciudadano</strong>.
+                                ¡Has comprendido cómo la malla urbana y la escala humana se articulan! Puedes seguir explorando el simulador en modo libre o volver al bloque para continuar.
                             </div>
                             <div>
                                 <button style={btnSecondaryStyle} onClick={() => setShowModal(false)}>
-                                    Seguir explorando
+                                    Seguir en modo libre
                                 </button>
-                                <button style={btnStyle} onClick={() => router.push('/bloques/4/ex2')}>
-                                    Continuar al Ejercicio 2
+                                <button style={btnStyle} onClick={() => router.push('/bloques/4')}>
+                                    Volver al Bloque
                                 </button>
                             </div>
                         </div>

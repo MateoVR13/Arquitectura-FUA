@@ -37,7 +37,7 @@ export default function Exercise1Block3() {
 
         const handleMessage = (event) => {
             if (event.data && event.data.type === 'exercise-complete' && event.data.exercise === 'b3_ex1') {
-                router.push('/bloques/3/ex2');
+                setShowModal(true);
             }
         };
 
@@ -47,7 +47,7 @@ export default function Exercise1Block3() {
             document.body.style.overflow = '';
             window.removeEventListener('message', handleMessage);
         };
-    }, [router]);
+    }, []);
 
     return (
         <PageTransition>
@@ -74,14 +74,14 @@ export default function Exercise1Block3() {
                             <div style={{ fontSize: '3rem', marginBottom: '15px' }}>🏛️</div>
                             <div style={titleStyle}>¡Ejercicio 1 Completado!</div>
                             <div style={bodyStyle}>
-                                Has comprendido la transformación de lo primitivo a lo clásico: la petrificación, la proporción, los órdenes y la simetría. Ahora avanzarás al <strong>Ejercicio 2: El Desafío de la Luz</strong>, donde transformarás un edificio románico en una catedral gótica.
+                                ¡Has comprendido la transformación de lo primitivo a lo clásico! Puedes seguir explorando el simulador en modo libre o volver al bloque para continuar.
                             </div>
                             <div>
                                 <button style={btnSecondaryStyle} onClick={() => setShowModal(false)}>
-                                    Seguir explorando
+                                    Seguir en modo libre
                                 </button>
-                                <button style={btnStyle} onClick={() => router.push('/bloques/3/ex2')}>
-                                    Continuar al Ejercicio 2
+                                <button style={btnStyle} onClick={() => router.push('/bloques/3')}>
+                                    Volver al Bloque
                                 </button>
                             </div>
                         </div>
