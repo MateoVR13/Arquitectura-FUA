@@ -110,7 +110,7 @@ export default function Block4Client({ user }) {
 
                 {/* ── Video Section ── */}
                 <div className="glass-panel" style={{ aspectRatio: '16/9', marginBottom: '50px', borderRadius: '16px', overflow: 'hidden', background: '#000' }}>
-                    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/QPLw2kESfO8" title="Video Prólogo – Bloque 4" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;" allowFullScreen />
+                    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/XigdW4vrkAE?controls=0&modestbranding=1&rel=0&iv_load_policy=3&cc_load_policy=1" title="Video Prólogo – Bloque 4" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;" allowFullScreen />
                 </div>
 
                 {/* ── Objective Banner ── */}
