@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { FaArrowLeft, FaLightbulb, FaFlask, FaBookOpen } from 'react-icons/fa';
 import PageTransition from '@/components/PageTransition';
+import YouTubePlayer from '@/components/YouTubePlayer';
 
 const steps = [
     { id: 1, title: 'Identificar', desc: 'Trazar líneas guía verticales y horizontales. Encontrar el esquema geométrico invisible.' },
@@ -137,9 +138,7 @@ export default function Block1Client({ user }) {
                                     </div>
 
                                     {/* Video Section */}
-                                    <div className="glass-panel" style={{ aspectRatio: '16/9', marginBottom: '60px', borderRadius: '16px', overflow: 'hidden', background: '#000' }}>
-                                        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/e9seQRVN-K8?controls=0&modestbranding=1&rel=0&iv_load_policy=3&cc_load_policy=1" title="Video Prólogo – Bloque 1" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;" allowFullScreen />
-                                    </div>
+                                    <YouTubePlayer videoId="e9seQRVN-K8" title="Video Prólogo – Bloque 1" />
 
                                     {/* Article Columns */}
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginBottom: '60px' }}>

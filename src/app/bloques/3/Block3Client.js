@@ -29,6 +29,7 @@ import {
 import PageTransition from '@/components/PageTransition';
 import PodcastPlayer from '@/components/PodcastPlayer';
 import ImageCarousel from '@/components/ImageCarousel';
+import YouTubePlayer from '@/components/YouTubePlayer';
 import styles from './block3.module.css';
 
 const ERAS = [
@@ -192,9 +193,7 @@ export default function Block3Client({ user }) {
                 </div>
 
                 {/* ── Video Section ── */}
-                <div className="glass-panel" style={{ aspectRatio: '16/9', marginBottom: '60px', borderRadius: '16px', overflow: 'hidden', background: '#000' }}>
-                    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/Sscv5lex7YE?controls=0&modestbranding=1&rel=0&iv_load_policy=3&cc_load_policy=1" title="Video Prólogo – Bloque 3" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;" allowFullScreen />
-                </div>
+                <YouTubePlayer videoId="Sscv5lex7YE" title="Video Prólogo – Bloque 3" />
 
                 {/* ── Timeline ── */}
                 <h2 style={{ fontSize: '2rem', borderBottom: '1px solid var(--border-glass)', paddingBottom: '10px', marginBottom: '40px' }}>
