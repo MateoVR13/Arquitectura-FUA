@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { FaArrowLeft, FaPlayCircle, FaLightbulb, FaFlask, FaBookOpen } from 'react-icons/fa';
+import { FaArrowLeft, FaLightbulb, FaFlask, FaBookOpen } from 'react-icons/fa';
 import PageTransition from '@/components/PageTransition';
 
 const steps = [
@@ -16,7 +16,7 @@ const steps = [
 export default function Block1Client({ user }) {
     // 0 is the theoretical introduction, 1-5 are the steps
     const [activeStep, setActiveStep] = useState(0);
-    const [showVideo, setShowVideo] = useState(false);
+
 
     return (
         <PageTransition>
@@ -136,22 +136,9 @@ export default function Block1Client({ user }) {
                                         </p>
                                     </div>
 
-                                    {/* Video Section at the top of the theory */}
-                                    <div className="glass-panel" style={{ aspectRatio: '16/9', marginBottom: '60px', borderRadius: '16px', overflow: 'hidden', position: 'relative', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        {!showVideo ? (
-                                            <div style={{ textAlign: 'center', zIndex: 2 }}>
-                                                <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(200,255,1,0.2)', display: 'flex', border: '1px solid var(--ua-lime)', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px auto', cursor: 'pointer', boxShadow: '0 0 30px rgba(200,255,1,0.3)' }} onClick={() => setShowVideo(true)}>
-                                                    <FaPlayCircle size={40} color="var(--ua-lime)" />
-                                                </div>
-                                                <p style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 'bold' }}>Reproducir Video Prólogo</p>
-                                            </div>
-                                        ) : (
-                                            <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-                                                <iframe width="100%" height="100%" src="https://www.youtube.com/embed/pCj6Z9cdM1I" title="Video Prólogo – Bloque 1" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;" allowFullScreen />
-                                                <button onClick={() => setShowVideo(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(0,0,0,0.7)', border: '1px solid var(--border-glass)', color: '#fff', padding: '8px 16px', cursor: 'pointer', borderRadius: '8px' }}>Cerrar</button>
-                                            </div>
-                                        )}
-
+                                    {/* Video Section */}
+                                    <div className="glass-panel" style={{ aspectRatio: '16/9', marginBottom: '60px', borderRadius: '16px', overflow: 'hidden', background: '#000' }}>
+                                        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/pCj6Z9cdM1I" title="Video Prólogo – Bloque 1" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;" allowFullScreen />
                                     </div>
 
                                     {/* Article Columns */}

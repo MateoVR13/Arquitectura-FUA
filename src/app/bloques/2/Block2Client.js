@@ -11,7 +11,7 @@ import {
     FaTh,
     FaWind,
     FaFlask,
-    FaPlayCircle,
+
     FaPodcast,
     FaImage
 } from 'react-icons/fa';
@@ -21,7 +21,7 @@ import ImageCarousel from '@/components/ImageCarousel';
 import styles from './block2.module.css';
 
 export default function Block2Client({ user }) {
-    const [showVideo, setShowVideo] = useState(false);
+
 
     return (
         <PageTransition>
@@ -40,22 +40,9 @@ export default function Block2Client({ user }) {
                     </p>
                 </div>
 
-                {/* Video Section – same style as Block 1 */}
-                <div className="glass-panel" style={{ aspectRatio: '16/9', marginBottom: '60px', borderRadius: '16px', overflow: 'hidden', position: 'relative', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {!showVideo ? (
-                        <div style={{ textAlign: 'center', zIndex: 2 }}>
-                            <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(200,255,1,0.2)', display: 'flex', border: '1px solid var(--ua-lime)', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px auto', cursor: 'pointer', boxShadow: '0 0 30px rgba(200,255,1,0.3)' }} onClick={() => setShowVideo(true)}>
-                                <FaPlayCircle size={40} color="var(--ua-lime)" />
-                            </div>
-                            <p style={{ color: '#fff', fontSize: '1.2rem', fontWeight: 'bold' }}>Reproducir Video Prólogo – Bloque 2</p>
-                        </div>
-                    ) : (
-                        <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-                            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/Fa3tjnaA2Ls" title="Video Prólogo – Bloque 2" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;" allowFullScreen />
-                            <button onClick={() => setShowVideo(false)} style={{ position: 'absolute', top: '20px', right: '20px', background: 'rgba(0,0,0,0.7)', border: '1px solid var(--border-glass)', color: '#fff', padding: '8px 16px', cursor: 'pointer', borderRadius: '8px' }}>Cerrar</button>
-                        </div>
-                    )}
-
+                {/* Video Section */}
+                <div className="glass-panel" style={{ aspectRatio: '16/9', marginBottom: '60px', borderRadius: '16px', overflow: 'hidden', background: '#000' }}>
+                    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/Fa3tjnaA2Ls" title="Video Prólogo – Bloque 2" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;" allowFullScreen />
                 </div>
 
                 {/* Bento Grid layout */}
