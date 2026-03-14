@@ -76,7 +76,7 @@ export default function Exercise1Block3() {
                             <div style={bodyStyle}>
                                 ¡Has comprendido la transformación de lo primitivo a lo clásico! Puedes seguir explorando el simulador en modo libre o volver al bloque para continuar.
                             </div>
-                            <div>
+                            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
                                 <button style={btnSecondaryStyle} onClick={() => setShowModal(false)}>
                                     Seguir en modo libre
                                 </button>
