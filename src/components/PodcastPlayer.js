@@ -12,6 +12,7 @@ const formatTime = (seconds) => {
 export default function PodcastPlayer({ src, title = 'Podcast', description = '', accentColor = 'var(--ua-lime)' }) {
     const audioRef = useRef(null);
     const progressRef = useRef(null);
+    const draggingRef = useRef(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
@@ -23,18 +24,26 @@ export default function PodcastPlayer({ src, title = 'Podcast', description = ''
     useEffect(() => {
         const audio = audioRef.current;
         if (!audio) return;
-        const onLoaded = () => setDuration(audio.duration);
-        const onTimeUpdate = () => { if (!isDragging) setCurrentTime(audio.currentTime); };
+        const updateDuration = () => {
+            if (audio.duration && isFinite(audio.duration)) setDuration(audio.duration);
+        };
+        const onTimeUpdate = () => { if (!draggingRef.current) setCurrentTime(audio.currentTime); };
         const onEnded = () => setIsPlaying(false);
-        audio.addEventListener('loadedmetadata', onLoaded);
+        audio.addEventListener('loadedmetadata', updateDuration);
+        audio.addEventListener('durationchange', updateDuration);
+        audio.addEventListener('canplaythrough', updateDuration);
         audio.addEventListener('timeupdate', onTimeUpdate);
         audio.addEventListener('ended', onEnded);
+        // In case metadata already loaded
+        updateDuration();
         return () => {
-            audio.removeEventListener('loadedmetadata', onLoaded);
+            audio.removeEventListener('loadedmetadata', updateDuration);
+            audio.removeEventListener('durationchange', updateDuration);
+            audio.removeEventListener('canplaythrough', updateDuration);
             audio.removeEventListener('timeupdate', onTimeUpdate);
             audio.removeEventListener('ended', onEnded);
         };
-    }, [isDragging]);
+    }, []);
 
     const togglePlay = () => {
         const audio = audioRef.current;
@@ -62,10 +71,11 @@ export default function PodcastPlayer({ src, title = 'Podcast', description = ''
     }, [duration]);
 
     const onPointerDown = (e) => {
+        draggingRef.current = true;
         setIsDragging(true);
         seek(e);
         const onMove = (ev) => seek(ev);
-        const onUp = () => { setIsDragging(false); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
+        const onUp = () => { draggingRef.current = false; setIsDragging(false); window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); };
         window.addEventListener('pointermove', onMove);
         window.addEventListener('pointerup', onUp);
     };
@@ -86,7 +96,7 @@ export default function PodcastPlayer({ src, title = 'Podcast', description = ''
             onMouseEnter={(e) => { e.currentTarget.style.borderColor = `color-mix(in srgb, ${accentColor} 30%, transparent)`; e.currentTarget.style.boxShadow = `0 0 25px color-mix(in srgb, ${accentColor} 8%, transparent)`; }}
             onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.boxShadow = 'none'; }}
         >
-            <audio ref={audioRef} src={src} preload="metadata" />
+            <audio ref={audioRef} src={src} preload="auto" />
 
             {/* Play Button */}
             <button
