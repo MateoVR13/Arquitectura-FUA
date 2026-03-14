@@ -109,7 +109,7 @@ export default function Block4Client({ user }) {
                 </div>
 
                 {/* ── Video Section ── */}
-                <div style={{ aspectRatio: '16/9', marginBottom: '50px', borderRadius: '16px', overflow: 'hidden', background: '#000', boxShadow: '0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,188,212,0.08)', border: '1px solid rgba(0,188,212,0.15)' }}>
+                <div style={{ aspectRatio: '16/9', marginBottom: '50px', overflow: 'hidden', background: '#000', border: '1px solid rgba(0,188,212,0.35)', boxShadow: '0 0 15px rgba(0,188,212,0.15), 0 0 40px rgba(0,188,212,0.05), inset 0 0 15px rgba(0,188,212,0.03)' }}>
                     <iframe width="100%" height="100%" src="https://www.youtube.com/embed/XigdW4vrkAE?rel=0" title="Video Prólogo – Bloque 4" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen;" allowFullScreen />
                 </div>
 
